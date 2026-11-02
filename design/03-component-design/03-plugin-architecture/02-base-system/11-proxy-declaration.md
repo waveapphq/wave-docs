@@ -1,0 +1,13 @@
+##### REQ-3.4.2.10 Plugin proxy declaration
+
+Every plugin declares how it relates to the Proxy setting in Settings > Network > Proxy (REQ-4.7.14), so an admin can see, block by block, what turning the proxy on changes and what it leaves alone.
+
+**Three Values**: A plugin declares one of three things. It uses the proxy: the web requests it makes from the WAVE host follow the Proxy setting, through the proxy or directly as the setting's route decision says. It does not use the proxy: it can cause web requests, but they are outside WAVE's control and follow the WAVE host's own settings whatever the Proxy setting says. Or the setting is not applicable: the plugin makes no web requests, so there is nothing for a proxy to carry.
+
+**Default**: A plugin that states nothing is not applicable. The default is held once, in the abstract foundation every plugin extends (REQ-3.4.2.1), so only a plugin that makes or causes web requests states a value and no plugin repeats the default.
+
+**Which Plugins Declare What**: The plugins whose web requests WAVE makes itself use the proxy: the HTTP block, the OpenSearch block, every Kubernetes block and every Helm block. The script blocks, Shell Script, Shell Exec and Python, do not use it: the commands a script runs inherit the WAVE host's environment unchanged, proxy variables included, so their traffic goes where that environment sends it (SHRUN-2). Every other plugin is not applicable: the plugins whose connections are not web requests, such as SSH, SFTP, SQL, Netcat and Ping, and the plugins that open no connection at all, such as the file and data plugins.
+
+**One Route Decision**: A plugin that uses the proxy asks the Proxy setting's one route decision for each address it is about to reach, and connects through the proxy or directly as the decision says. It never reads the WAVE host's proxy variables itself, so every such plugin treats the same address the same way and none can differ from the rule Settings shows. On a remote host inside a Remote Execution body the declaration changes nothing: the Proxy setting covers requests made from the WAVE host only.
+
+**Where the Declaration Shows**: The Proxy Blocks page under Settings > Network > Proxy sorts every plugin's block into three sections, "Blocks that use this proxy", "Blocks that do not use this proxy" and "Not applicable". The sections are built from these declarations and from nothing else, so no second list exists that could fall out of step with the plugins. The block catalog served to assistants carries the same value on every block, so an assistant that reads a block's entry learns its relation to the proxy from the same source. Remote Execution, a container, is not on the page; in the catalog it reads as not applicable.
