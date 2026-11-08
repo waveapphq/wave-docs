@@ -22,7 +22,7 @@ A failure while the block runs follows On error and carries the reason shown (SQ
 | A SQLite file cannot be opened: the file or its folder is not there, a Test Data file that does not exist included | `Could not open the SQLite file {file}: {SQLite's own text}`; a Test Data file that does not exist is named as typed | Unreachable |
 | The login is refused | `Authentication failed for {user} at {host}: {database's own text}` | AuthFailed |
 | The database refuses a statement: syntax, a missing object, a constraint, a permission | the database's own code and text, unchanged (`ORA-00942: table or view does not exist`) | DatabaseError |
-| The whole block runs past Timeout | `Statement timed out after {n} seconds`; the running statement is canceled on the database | Timeout |
+| The whole block runs past Timeout | `Statement timed out after {n} seconds` (singular "second" when {n} is 1); the running statement is canceled on the database | Timeout |
 | A `:name` in the SQL has no Parameters entry | `Parameter '{name}' is used in the SQL but not defined`, before anything is sent | Validation |
 | A remote host has no driver build for its Python, CPU or libc | `{host} cannot run {database type}: it has Python {x.y} on {cpu} / {libc}; WAVE carries {list}` | Unsupported |
 
