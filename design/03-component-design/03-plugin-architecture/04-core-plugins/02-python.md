@@ -92,7 +92,7 @@ Under Record and continue a failed export binds the exports that did fit, leaves
 | An exported variable is listed more than once | `Script variable '{name}' is listed more than once` | Validation |
 | The script file is not there | `Script file not found: {path}` | StartFailed |
 | The working directory is not there | `Working directory not found: {path}` | StartFailed |
-| Working Directory is a `testdata://` or `artifact://` reference inside a Remote Execution body | `testdata:// paths are not available on the remote host` (or the `artifact://` form) | StartFailed |
+| Working Directory is a `testdata://` or `artifact://` reference inside a Remote Execution body | `testdata:// paths are not available on the remote host - use an absolute or relative path on the remote host` (or the `artifact://` form) | StartFailed |
 | The interpreter program is not installed where the block runs | `Interpreter not found on the WAVE server: {program}` or `Interpreter not found on the remote host: {program}` | StartFailed |
 | The interpreter starts but is older than 3.8 or is not Python | `Interpreter is not Python 3.8 or newer: {program}` | StartFailed |
 | The operating system refuses to start the script | `Could not start the script: {os error}` | StartFailed |

@@ -36,9 +36,9 @@ Each query result is returned as a separate top-level output variable. Optional 
 
 When operating in individual mode, query results can be coerced to target types:
 
-- **string**: Default, no conversion needed for scalar values. Arrays cannot be converted.
-- **integer**: Converts numeric strings and floats to integers. Arrays cannot be converted.
-- **float**: Converts numeric strings and integers to floats. Arrays cannot be converted.
+- **string**: Default, no conversion needed for scalar values. A map is written in WAVE's print form. Arrays cannot be converted.
+- **integer**: Converts whole-number strings and floats to exact integers; a value with a fractional part is refused. Arrays cannot be converted.
+- **float**: Converts numeric strings and integers to exact floats; NaN and infinities are refused. Arrays cannot be converted.
 - **boolean**: Converts string values (true/false, yes/no, 1/0) and numeric values to boolean. Arrays cannot be converted.
 
 Coercion failures are captured as per-query errors.
