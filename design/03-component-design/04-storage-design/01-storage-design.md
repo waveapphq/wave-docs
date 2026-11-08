@@ -140,7 +140,7 @@ API entities (tests, environments, profiles, executions) use a caching storage p
 
 API entities persist to file-based YAML storage enabling data survival across server restarts while maintaining fast access through in-memory caching.
 
-**Storage Directory Structure**: Each entity type has a dedicated storage directory under the configurable base path. Within each type directory, individual entities are stored in subdirectories identified by their unique ID. This structure enables efficient entity enumeration, individual entity access, and clean deletion operations.
+**Storage Directory Structure**: Each entity type has a dedicated storage directory under the configurable base path. Within each type directory, individual entities are stored in subdirectories identified by their unique ID. This structure enables efficient entity enumeration, individual entity access, and clean deletion operations. An ID names a subdirectory only when it is one plain path segment: not empty, not `.` or `..`, and holding no slash, backslash or NUL character. Any other ID names no stored entity, however it arrives: a read reports not found and a write is refused. The same rule holds for a test's Test Data folder and for a plugin ID, and a Function version names a file only when it is a valid semantic version.
 
 ```
 {base}/
