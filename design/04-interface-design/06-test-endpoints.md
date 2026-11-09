@@ -48,7 +48,7 @@ Test workflow endpoints provide lifecycle operations for test entities enabling 
 
 **Clone and History**: Clone operations create copies of existing tests with new names, supporting test derivation workflows; a clone receives a copy of the source's test data. History endpoints provide complete version audit trail with change descriptions. Restore operations create new versions from historical snapshots.
 
-**Execution History**: Execution history endpoints link to past runs enabling trend analysis and regression detection.
+**Execution History**: A test's past runs come from the execution listing filtered to the test (see 4.12.1), enabling trend analysis and regression detection.
 
 **Caching and Performance**: A directory cache mirrors the test storage, and tag and list responses carry a 60-second cache lifetime.
 

@@ -34,7 +34,7 @@ The Shell Exec block runs one command line on the WAVE server in a shell the aut
 | The shared path resolver refuses the working directory | The resolver's own message, passed through unchanged, for example `artifact:// scheme requires artifacts directory, but none configured in context` | StartFailed |
 | The working directory is not there | `Working directory not found: {path}` | StartFailed |
 | The command exits with a non-zero code | `Command exited with code {code}: {line}`, where the line is the last line of Stderr that is not blank, trimmed and cut to 200 characters; just `Command exited with code {code}` when Stderr is empty or marked secret | NonZeroExit |
-| Timeout runs out | `Command timed out after {n} seconds` | Timeout |
+| Timeout runs out | `Command timed out after {n} seconds` (singular "second" when {n} is 1) | Timeout |
 
 The run console also receives two WARN lines of its own:
 

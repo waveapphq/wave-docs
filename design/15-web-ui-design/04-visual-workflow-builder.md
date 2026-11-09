@@ -1037,7 +1037,7 @@ The Save button uses the small spinner variant (16px) that replaces the button t
 
 | Canvas Concept | Test Model Field | Transformation |
 |----------------|------------------|----------------|
-| Nodes array | workflow_blocks | Each node becomes a WorkflowBlock with type, parameters, position |
+| Nodes array | workflow nodes | Each node keeps its type, parameters and position |
 | Edges array | block connections | Edge graph preserves control flow structure (branching and convergence) |
 | Node data | block configuration | Plugin type, parameters, variable bindings preserved |
 | Node positions | layout metadata | X/Y coordinates stored for canvas restoration on load |
