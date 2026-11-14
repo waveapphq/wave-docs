@@ -8,7 +8,7 @@ The assert control evaluates a set of typed assertions against runtime variable 
 ##### REQ-3.3.1.2 Regular expression patterns
 ##### REQ-3.3.1.4 Count-based validations (equal, less, greater)
 
-**Assertion Row Types**: Each assertion row is either literal (variable + type + operator + value) or expression (a single boolean Python expression). Multiple rows are combined using AND/OR logic with optional grouping for precedence. The overall result is a single `passed` boolean.
+**Assertion Row Types**: Each assertion row is either literal (variable + type + operator + value) or expression (a single boolean Python expression). A literal row's compare value is a plain value, an expression, or - where it is text - a template whose `{{ }}` parts are filled in each time the row is checked; it is never null. The rows are drawn and checked as the Condition Rows subsection of the Visual Workflow Builder design (15.4.2) describes. Multiple rows are combined using AND/OR logic with optional grouping for precedence. The overall result is a single `passed` boolean.
 
 | Type | Operators |
 |------|-----------|
@@ -23,7 +23,7 @@ The assert control evaluates a set of typed assertions against runtime variable 
 
 **Typed values**: `length equals` compares the item count as a number, and `contains` and `does not contain` on an array compare typed values, so the integer `3` and the text `'3'` are different items.
 
-Expression rows accept any Python boolean expression referencing in-scope variables, with AST-based validation at design time.
+Expression rows accept any Python boolean expression referencing in-scope variables, with AST-based validation at design time. The save check reads every row at any group depth as it reads a Block field: an expression row or compare-to expression that reads an undeclared variable or would change data is refused at Save, as the run refuses it.
 
 ##### REQ-3.3.1.5 Configurable failure behavior (stop/continue)
 
@@ -74,7 +74,7 @@ WARN (not ERROR) is the default because assertion failure is a controlled outcom
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `mode` | string enum | yes | `"single"` | `"single"` or `"split"` |
+| `mode` | string enum | yes | `"split"` | `"single"` or `"split"` |
 | `assertions` | list | yes | - | Ordered list of assertion rows with AND/OR grouping |
 | `fail_current_scope` | boolean | no | `false` | When true, a failed assertion in single mode fails the block and stops the flow; in split mode the flow continues down the fail branch and the Test or Function it runs in ends failed |
 

@@ -64,8 +64,8 @@ Null is WAVE's one value for "nothing". These subsections hold the whole null de
 
 | Field | Left empty or not set | Given null |
 |-------|-------------------------|------------|
-| Required | A literal left empty blocks Save | Fails at run time and names the field |
-| Optional with a default | Uses the default | Fails at run time and names the field |
+| Required | A literal left empty blocks Save | A written null is refused at Save, naming the field; a null that appears only at run, such as an expression result, fails at run time and names the field |
+| Optional with a default | Uses the default | A written null is refused at Save, naming the field; a null that appears only at run, such as an expression result, fails at run time and names the field |
 | Optional with no default | Is null | Is null |
 
 A setting or input can therefore be null only when it is optional with no default, or when it is one of the data fields below. A field whose fallback the block itself picks - the SQL port per database type, the Kubernetes and Helm namespace taken from the session, the HTTP body - counts as a field with a default: left empty it still falls back, and given null it fails. A field whose default is empty text fails on null the same way. Every optional block setting has a default of one of these kinds, so a block setting takes null only when it is a data field; the third row serves Function inputs, whose authors declare it. A Function that wants an input to take null declares it optional with no default; the input's description is where its author says so.
@@ -92,7 +92,7 @@ Where a data field is an entry of a map setting - SQL Parameters, procedure Argu
 
 **Function outputs**: A Function that finishes hands back what it wrote into each output, else the output's default, else null; a Function that fails hands back nothing. A null an output returns, such as a null query cell, is never a reason to warn; the warnings are about the Function's definition instead: every run of a Function Block writes a WARN to the run log for an input no block in the Function uses and for an output no block writes (REQ-3.1.2.7).
 
-**Variable Setter rows**: An expression row left empty blocks Save, and so does an emptied number box; a text row left empty writes empty text, which is a value. A row that should write null says so with the expression `None`.
+**Variable Setter rows**: A row's value is a data field on the one value field (FIELD-5): its null icon writes null, and so does `None` in {x}; clearing a value of any type but text gives null; a text row typed into and emptied writes empty text, which is a value. An {x} row left blank blocks Save in the window with `Value is required`; a save through the API or MCP is refused with `'<row>' in 'variables' is required`, naming the row.
 
 **Failure messages**: A block setting given null fails with `'{setting}' is null`, where `{setting}` is the setting's name as the block declares it, the same name every other block message uses. A Function input is a field of its Function Block, so it fails with the same wording, `'{name}' is null`, where `{name}` is the input's declared name, and a field that fails to evaluate fails with the wording every block setting uses. A Function run on its own uses the same wording.
 
@@ -118,7 +118,7 @@ Where a data field is an entry of a map setting - SQL Parameters, procedure Argu
 
 **Everywhere else, `None`**: Where a value can be an expression, null is the expression `None`: a new variable of Kind Expression, Variable Setter rows, block fields (Function Block inputs included) through the expression toggle, and a recipe's JSON `null`. Inside a list, map or table, `null` written in the Code view text is a null item, map value or cell, and a table cell keeps its own null control. A whole `null` typed as the Code view text of a list, map or table is refused in every editor with that view's existing message (VMGR-96): the checkbox is the one way to a null whole value.
 
-**Where a null control is offered**: A null control is offered only where a whole null is allowed: for a variable, a Function local variable, a Function input or a Function output in its window, through Set to null above; and on a Block window, for a Function input that is optional with no default and a block data field that accepts null, through the null icon (∅) inside the field (FIELD-5). A field that refuses a whole null - a Required field, an optional field with a default, an enum input - never offers one; whether a block field accepts a whole null is part of its declaration in its block's definition. Suite, regression and system variables offer none. Where the null option is off, an emptied number box blocks Save with the type's existing message and never means 0 (VMGR-95).
+**Where a null control is offered**: A null control is offered only where a whole null is allowed: for a variable, a Function local variable, a Function input or a Function output in its window, through Set to null above; and on a Block window, for a Function input that is optional with no default and a block data field that accepts null - a Variable Setter row's value and the For count among them - through the null icon (∅) inside the field (FIELD-5). A field that refuses a whole null - a Required field, an optional field with a default, an enum input - never offers one; whether a block field accepts a whole null is part of its declaration in its block's definition. Suite, regression and system variables offer none. Where the null option is off, an emptied number box blocks Save with the type's existing message and never means 0 (VMGR-95).
 
 ##### REQ-3.1.3.25 Checks and loops on null
 

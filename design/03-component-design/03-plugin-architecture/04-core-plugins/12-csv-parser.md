@@ -64,7 +64,7 @@ Secret masking and I/O logging are inherited from the plugin execution harness; 
 
 ## Frontend Integration
 
-Input parameters and outputs render through the standard element-configuration table (info tooltip, parameter, type, value, expression toggle). The sort and filter controls render as a Transform section of two collapsible sub-sections built on the assertion control's condition-building and grouping primitives. Type-driven behavior is visible in the form: a column reference is chosen by name or by index, becoming a searchable picker only when a schema supplies the column set, and a filter's declared type is fixed automatically under schema mode.
+Input parameters and outputs render through the standard element-configuration table (info tooltip, parameter, type, value, expression toggle). The sort and filter controls render as a Transform section of two collapsible sub-sections built on the assertion control's condition-building and grouping primitives: a filter's comparison is the check Blocks' condition row without the variable box, its value the one value field with expand and {x} (CSV-12); without the variable box a filter row fits on one line in the window at its standard width (FIELD-16). Type-driven behavior is visible in the form: a column reference is chosen by name or by index, becoming a searchable picker only when a schema supplies the column set, and a filter's declared type is fixed automatically under schema mode.
 
 ## Design System Reference
 
