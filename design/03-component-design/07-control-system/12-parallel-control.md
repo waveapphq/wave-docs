@@ -31,7 +31,7 @@ container-exit neutral.
 
 **Branch creation**: Branches are authored as an ordered list on the control's configuration.
 Each branch has a name, used on its lane tooltip, in the run log and in reports, and an
-optional time limit of its own. Branches can be added, renamed, reordered and removed;
+optional time limit of its own, a whole number of milliseconds of at least 1, written as a number or as an expression. Branches can be added, renamed, reordered and removed;
 reordering moves the lanes with them so the canvas keeps matching the list. A parallel
 section holds at least two branches - one branch is a sequence, which the canvas already
 expresses without a control.

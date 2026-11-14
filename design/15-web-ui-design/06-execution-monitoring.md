@@ -211,6 +211,7 @@ The canvas updates in real-time as execution progresses through workflow blocks.
 |-------|--------|-----------------|
 | Block Started | Backend execution engine | Highlight block as running, update breadcrumb status |
 | Block Completed | Backend execution engine | Mark block as passed/failed, advance visual indicator |
+| Lane Taken | Backend execution engine | Highlight the wire of each lane the flow entered from that block in its current pass |
 | Execution Paused | Breakpoint, pause on first block, or pause on errors | Show paused state, enable debug controls |
 | Execution Completed | All blocks finished | Show final status, enable Reset action |
 
@@ -299,7 +300,7 @@ The Variable Manager panel displays runtime variable values during workflow exec
 
 **Full-Value Live Inspection**: The per-variable inspect modal (see REQ-3.1.3.11) is the untruncated live surface: its Current mode renders the complete runtime value and re-renders in real time as variable-change events arrive, both during live execution and from the end-of-run snapshot in the history workbench. The WebSocket push carries full values for scalar types, so the modal displays scalar runtime values without any additional fetch.
 
-For complex types (array, map, table) the stream carries only count summaries, so full values come from a read-only workbench session variables resource that exposes the live session's current variable values, filtered to the requested names and with secret values masked. An open inspect modal fetches the full value when it opens and re-fetches whenever a change summary for its variable arrives - the summary acts as an invalidation signal. This keeps the refresh event-driven with no polling loop; the per-variable stream throttle naturally bounds the fetch rate. Table values are served in the canonical column-schema shape (named, typed columns plus row arrays) so an empty table still carries its column structure; the table body also accepts the row-object list shape used by persisted definitions. The history workbench needs no fetch at all - its end-of-run snapshot already contains full values - and an idle workbench renders the persisted definition, which is also already full.
+For complex types (array, map, table) the stream carries only count summaries (a value masked whole carries the bare placeholder instead, see REQ-3.1.3.5), so full values come from a read-only workbench session variables resource that exposes the live session's current variable values, filtered to the requested names and with secret values masked. An open inspect modal fetches the full value when it opens and re-fetches whenever a change summary for its variable arrives - the summary acts as an invalidation signal. This keeps the refresh event-driven with no polling loop; the per-variable stream throttle naturally bounds the fetch rate. Table values are served in the canonical column-schema shape (named, typed columns plus row arrays) so an empty table still carries its column structure; the table body also accepts the row-object list shape used by persisted definitions. The history workbench needs no fetch at all - its end-of-run snapshot already contains full values - and an idle workbench renders the persisted definition, which is also already full.
 
 **Value Formatting**: Values display with type-appropriate formatting in the list view:
 
@@ -313,6 +314,7 @@ For complex types (array, map, table) the stream carries only count summaries, s
 | Map | `{n keys}` summary | Count only |
 | Table | `5×3 table` dimensions | Dims only |
 | Secret | `********` with lock icon | Fixed mask |
+| Masked copy of a secret | `********`, no `SECRET` badge | Fixed mask |
 
 **Type Colors**: Value text and the type badge use the type's color. Expression-typed value text overrides to cyan; secret value text overrides to slate `********`.
 
@@ -663,6 +665,9 @@ an italic warning line in the warning amber naming both types (`received map - d
 integer`) with the raw value below, tinted by its actual type, and the metric shows `type
 mismatch`. The Code view of complex watchers is type-agnostic and continues to render the
 raw payload. The guard is display-only; the write-path gates remain the enforcement points.
+A value masked whole is no mismatch: an unflagged copy of a secret list, map, table or number
+reads as the bare placeholder (REQ-3.1.3.5), and its watcher shows that placeholder in every
+view, with no metric, while Initial still shows the copy's own definition.
 
 ##### REQ-3.1.3.12 Auto-refresh variables on change
 
@@ -714,6 +719,7 @@ t=250ms  counter=5  → Push immediately (new window)
 | Array | `{count: n, changed: true}` | Summary only, FE fetches on expand |
 | Map | `{count: n, changed: true}` | Summary only, FE fetches on expand |
 | Table | `{rows: n, cols: m, changed: true}` | Summary only, FE fetches on expand |
+| Array, map or table masked whole | The bare placeholder | No count and no shape, flagged or a copy of a secret (REQ-3.1.3.5) |
 
 **WebSocket Message Format**:
 
@@ -1138,10 +1144,10 @@ The Historical Test Canvas is the per-test drill-in page reached from the Execut
 | Region | Content | Read-only Mode |
 |--------|---------|----------------|
 | Canvas | The test's snapshotted workflow painted with per-block status (passed / failed / skipped / stopped / pending) from the execution's stored timeline | No palette, no drag, no connect, no block-drop, no context menu, block inspection dialogs are view-only |
-| Variable Manager | The test's declared variables (type, initial value, `isExpression` / secret flags) overlaid with the execution's end-of-run runtime values (secrets masked). Same flat list, sort, filter, and per-row eye toggle as the live panel. | `+ Add` hidden; edit (pencil) and delete (trash) disabled (read-only mode); eye toggle remains usable - eye-ON renders the snapshot's runtime value (the evaluated outcome for expressions), eye-OFF renders the test's declared definition (the initial value for plain variables, the expression source text for `isExpression`). When the source test was deleted after the run the panel falls back to the runtime snapshot only and the toggle becomes a no-op for that case. |
+| Variable Manager | The test's declared variables (type, initial value, `isExpression` / secret flags) overlaid with the execution's end-of-run runtime values (secrets masked). Same flat list, sort, filter, and per-row eye toggle as the live panel. | `+ Add` hidden; edit (pencil) and delete (trash) disabled (read-only mode); eye toggle remains usable - eye-ON renders the snapshot's runtime value (the evaluated outcome for expressions), eye-OFF renders the test's declared definition (the initial value for plain variables, the expression source text for `isExpression`). When the source test was deleted after the run the panel falls back to the runtime snapshot only and the toggle becomes a no-op for that case; the snapshot names the variables the run held secret, so only those carry the `SECRET` flag badge, and a copy the run stored masked reads `********` without it. |
 | Console | The slice of log entries belonging to this test within the execution | Clear button visible but disabled, all other controls (level dropdown, auto-scroll, settings popover) remain functional; the "Jump to bottom" affordance still works |
 
-**Painting Source**: The canvas shape is the workflow snapshot persisted on the execution record at dispatch time (see 15.6.4 "Workflow Snapshot"). Per-block status is sourced from the stored timeline. The Variable Manager carries two views: declared definitions resolved from the source test entity (type, initial value, `isExpression` / secret flags) drive the eye-OFF surface, while the execution's end-of-run variable store drives the eye-ON surface. Logs are the subset of the execution's persisted logs whose `test_id` matches this test. Because the snapshot is authoritative and immutable, the historical canvas is stable across any subsequent edits to the source test - no drift, no banner, no reconciliation. If the source test has been deleted, the definitions resolve to empty and the panel renders the runtime snapshot only.
+**Painting Source**: The canvas shape is the workflow snapshot persisted on the execution record at dispatch time (see 15.6.4 "Workflow Snapshot"). Per-block status is sourced from the stored timeline. The Variable Manager carries two views: declared definitions resolved from the source test entity (type, initial value, `isExpression` / secret flags) drive the eye-OFF surface, while the execution's end-of-run variable store drives the eye-ON surface. Logs are the subset of the execution's persisted logs whose `test_id` matches this test. Because the snapshot is authoritative and immutable, the historical canvas is stable across any subsequent edits to the source test - no drift, no banner, no reconciliation. If the source test has been deleted, the definitions resolve to empty and the panel renders the runtime snapshot only, marking secret the variables the run held secret, which the snapshot records with its values.
 
 **Multi-Tab Independence**: Opening a historical canvas never interacts with the Workbench session for the current user, and never interacts with any live tracked execution. Multiple tabs can render multiple historical canvases concurrently with no shared state. The Workbench can be idle, mid-ephemeral-run, or mid-tracked-run without affecting what these tabs render.
 

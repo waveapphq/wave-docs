@@ -6,7 +6,7 @@ The For loop control provides count-based and range-based iteration within visua
 
 **Control Purpose and Use Cases**: Repeating a sequence of operations a deterministic number of times. Stress/consistency testing (repeat HTTP requests), data generation (create N records), numeric range traversal (ports 8080-8085), and parameterized test variations.
 
-**Iteration Modes**: Two modes selected via a configuration radio:
+**Iteration Modes**: Two modes selected with the Mode choice list:
 
 - **Count mode**: Iteration count provided. Sequence: 0 (inclusive) to count (exclusive) with configurable step.
 - **Range mode**: Explicit start and end. Sequence: start (inclusive) to end (exclusive) with configurable step.
@@ -18,10 +18,10 @@ Both modes share step (default 1) and timeout parameters. All iteration values a
 | Parameter | Type | Required | Default | Visibility | Group | Description |
 |-----------|------|----------|---------|-----------|-------|-------------|
 | `mode` | string enum (count, range) | yes | count | always | - | Iteration mode |
-| `count` | integer | yes (count) | - | mode = count | - | Number of iterations |
+| `count` | integer | yes (count) | - | mode = count | - | Number of iterations, 0 or more; accepts null (a null count runs zero times) |
 | `start` | integer | yes (range) | - | mode = range | - | Starting value (inclusive) |
 | `end` | integer | yes (range) | - | mode = range | - | Ending value (exclusive) |
-| `step` | integer | yes | 1 | always | Advanced | Increment per iteration |
+| `step` | integer | yes | 1 | always | Advanced | Increment per iteration; never 0 |
 | `timeout` | float | no | - | always | Advanced | Max execution time in seconds |
 
 **Output Variables**:
@@ -29,6 +29,8 @@ Both modes share step (default 1) and timeout parameters. All iteration values a
 | Output | Type | Description |
 |--------|------|-------------|
 | `index` | integer | Current iteration value |
+
+**Field checks**: The Count field carries the null icon (FIELD-5), since Count is a data field that accepts null; a null count runs zero times. The save check refuses a written negative count and a written step of 0 with the messages the run gives for those values, so a For that cannot run is never saved; an expression whose result breaks one of these rules fails at run with the run's own line.
 
 ##### REQ-3.5.1.16 For Each loop over collections
 
@@ -53,6 +55,7 @@ Empty collections produce zero iterations; the body paints skipped and execution
 | Parameter | Type | Required | Default | Visibility | Group | Description |
 |-----------|------|----------|---------|-----------|-------|-------------|
 | `collection` | variable ref (array, map, table) | yes | - | always | - | Collection variable to iterate over |
+| `collection_type` | string enum (array, map, table) | no | - | always | - | The collection's type, picked in the Collection row's Type column |
 | `timeout` | float | no | - | always | Advanced | Max execution time in seconds |
 
 **Output Variables**:
@@ -80,14 +83,14 @@ The While loop control provides condition-based iteration within visual workflow
 - **Groups**: Nested assertion lists for complex precedence.
 - **Operators**: AND (higher precedence) and OR connecting assertion items.
 
-The config modal renders the same visual condition builder used by If/Else, giving test engineers a familiar interface for constructing boolean logic without writing raw expressions. A condition row on a null value follows the check rule of REQ-3.1.3.25.
+The config window renders the same condition rows If/Else uses (Visual Workflow Builder, 15.4.2 Condition Rows), under the table of Mode, Max Iterations and Timeout, giving test engineers a familiar interface for constructing boolean logic without writing raw expressions. A condition row on a null value follows the check rule of REQ-3.1.3.25.
 
 **Safety Guards**: Two optional limits prevent runaway loops:
 
 - **Max iterations**: When the iteration count reaches this limit and the condition is still true, the loop terminates and the session fails. This is a hard failure - hitting the limit means the expected condition was never satisfied.
 - **Timeout**: When execution time exceeds this limit, the loop terminates and the session fails. Same failure semantics as max iterations.
 
-Both guards are optional with no default values, placed in a collapsible Advanced configuration group. Test engineers set these explicitly when building polling or retry workflows.
+Both guards are optional with no default values, placed in a collapsible Advanced configuration group. Max iterations is at least 1; the save check refuses a lower written number with the message the run gives for it, and an expression whose result is lower fails at run with the run's own line. Test engineers set these explicitly when building polling or retry workflows.
 
 **Parameter Schema**:
 
@@ -95,7 +98,7 @@ Both guards are optional with no default values, placed in a collapsible Advance
 |-----------|------|----------|---------|-----------|-------|-------------|
 | `mode` | string enum (while-do, do-while) | yes | while-do | always | - | Evaluation mode: pre-check or post-check |
 | `conditions` | array (assertion items) | yes | - | always | - | Condition to evaluate (same format as If/Else) |
-| `max_iterations` | integer | no | - | always | Advanced | Maximum iteration count (session fails if reached) |
+| `max_iterations` | integer | no | - | always | Advanced | Maximum iteration count, at least 1 (session fails if reached) |
 | `timeout` | float | no | - | always | Advanced | Max execution time in seconds (session fails if reached) |
 
 **Output Variables**:
@@ -123,8 +126,8 @@ The following applies to all loop controls (For, For Each, While).
 
 **Error Handling**: Body node failure aborts the loop immediately. Remaining nodes, remaining iterations, and then-path are skipped. Session fails. For resilience, wrap body nodes in try/catch.
 
-##### REQ-3.5.1.2 Break current block execution
-##### REQ-3.5.1.3 Continue to next iteration
+##### REQ-3.5.1.2 Break out of the chosen enclosing loop
+##### REQ-3.5.1.3 Continue with the next iteration of the chosen enclosing loop
 
 **Break and Continue** are loop modifier controls - separate sequential nodes placed inside loop body chains. They carry no condition logic and no expression evaluation. They are pure signal controls: when execution reaches a Break or Continue node, the signal fires unconditionally.
 
@@ -147,9 +150,9 @@ When placed outside any loop body, the dropdown is empty with "No loops detected
 
 **Output Variables**: None.
 
-**Multi-Level Signal Propagation**: When a break or continue targets a loop that is not the immediately enclosing loop, the signal propagates upward through intermediate loops. Each intermediate loop exits its iteration cycle and, instead of queueing its then-path successors, stores the signal and target in the session for the next enclosing loop to consume. This continues until the target loop is reached, which then processes the signal normally (break: queue then-path; continue: advance iteration).
+**Multi-Level Signal Propagation**: When a break or continue targets a loop that is not the immediately enclosing loop, the signal propagates upward through intermediate loops. Each intermediate loop exits its iteration cycle and, instead of queuing its then-path successors, stores the signal and target in the session for the next enclosing loop to consume. This continues until the target loop is reached, which then processes the signal normally (break: queue then-path; continue: advance iteration).
 
-**Backend Validation**: The execution engine validates that `target_loop` references a real loop node ID that is an upstream ancestor of the break/continue node. Invalid references produce a validation error.
+**Backend Validation**: The Test save and the Function save refuse a Break or Continue whose target is not a loop whose body holds it; a loop's body holds every Block reached forward from its first Block.
 
 **Canvas Rendering**: Standard sequential control nodes with cyan loop category color. Break uses the LogOut icon; Continue uses the SkipForward icon. Single input and output handles. No special rendering treatment beyond the standard control node appearance.
 
