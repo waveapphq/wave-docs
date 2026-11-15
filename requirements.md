@@ -503,7 +503,7 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 - REQ-5.2.1.50: Layout choices remembered for the browser session (a section, group or panel the user opens, closes, shows, hides or resizes comes back the same on return to the page and after a page load in the same tab; a new tab starts from the defaults)
 
 ##### Accessibility
-- REQ-5.2.1.30: WCAG 2.1 AA compliance
+- REQ-5.2.1.30: WCAG 2.2 AA compliance
 - REQ-5.2.1.31: Full keyboard navigation
 - REQ-5.2.1.32: Screen reader compatibility (ARIA labels)
 - REQ-5.2.1.33: Focus management and visible focus indicators
@@ -581,7 +581,6 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
   - REQ-5.2.6.4.8: Bulk artifact operations
   - REQ-5.2.6.4.9: Bulk report operations
   - REQ-5.2.6.4.10: Bulk configuration operations
-  - REQ-5.2.6.4.11: Bulk user operations (future: multi-user authentication)
   - REQ-5.2.6.4.12: Bulk plugin operations (custom plugins)
 
 #### 5.2.7 MCP Server
@@ -652,11 +651,8 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 
 ### 7.3 Future Considerations
 - FUT-7.3.1: Database migration path
-- FUT-7.3.2: Multi-user authentication
 - FUT-7.3.3: Notification extensions (Teams, email, Slack)
-- FUT-7.3.4: Cloud deployment options
 - FUT-7.3.5: Advanced analytics
-- FUT-7.3.6: AI-powered test generation
 - FUT-7.3.7: Automated test execution in CI/CD
 - FUT-7.3.8: Test failure blocks deployment
 - FUT-7.3.9: Performance benchmarking and optimization
@@ -669,9 +665,7 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 - FUT-7.3.16: Sub-test/nested test calling
 - FUT-7.3.17: Advanced parallel patterns (fork/join)
 - FUT-7.3.18: Container image execution environment for Shell Script and Python plugins
-- FUT-7.3.19: Distributed execution across multiple nodes
 - FUT-7.3.21: Execution time estimation based on historical averages
-- FUT-7.3.22: Parallel test execution in suites
 - FUT-7.3.23: Jenkins/GitLab CI integration
 - FUT-7.3.24: Grafana dashboards integration
 - FUT-7.3.25: Prometheus metrics integration
