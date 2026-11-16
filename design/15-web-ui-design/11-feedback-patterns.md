@@ -544,7 +544,7 @@ Every other way out follows the same rule and never drops an editor's unsaved te
 
 #### 15.11.2 Delete Blocked by Running Execution
 
-Delete attempts against a test, suite, or regression currently referenced by a running or paused tracked execution are rejected at the server with `409 Conflict`. The response payload carries the identifiers of the blocking execution or executions so the UI can route the user to the right place to resolve the block.
+Delete attempts against a test, suite, or regression currently referenced by a running or paused tracked execution are rejected at the server with `409 Conflict`. A test is also blocked while a running or paused suite or regression execution carries it, or while a workbench session is running or paused on it. The response payload carries the identifiers of the blocking executions and workbench sessions so the UI can route the user to the right place to resolve the block.
 
 **Toast Surface**: The UI does not open a modal for this case. The user initiated the delete, so the inline toast channel described in REQ-5.2.1.19 is the appropriate acknowledgment. The toast uses the destructive severity and includes a link action navigating to the execution detail view where the user can stop the blocking execution and retry the delete.
 

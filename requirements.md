@@ -229,7 +229,7 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 - REQ-3.4.3.5: Round-robin failover for endpoints
 - REQ-3.4.3.6: Blacklist unreachable endpoints temporarily
 - REQ-3.4.3.7: Configurable blacklist duration (default 60s)
-- REQ-3.4.3.8: Set variables with configurable scope (block/test)
+- REQ-3.4.3.8: Set variables during execution in the scope of the flow the block runs in: the Test, or the Function that holds it
 - REQ-3.4.3.9: The HTTP block's proxy choice is WAVE setting (the default: follows the Proxy setting) or Off (a direct connection). On a remote host the block uses that host's own proxy settings and the choice is not offered.
 - REQ-3.4.3.10: The HTTP block's Auto content type for a file body or a multipart file part comes from WAVE's own file-type table, the same on every WAVE host; an explicit content type overrides it.
 - REQ-3.4.3.11: A Shell Script, Shell Exec or Python block whose Working Directory is empty starts in the temp folder Python reports on the machine the block runs on.
@@ -271,8 +271,8 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 
 #### 3.5.1 Control Flow Blocks
 - REQ-3.5.1.1: Conditional execution block (if/else)
-- REQ-3.5.1.2: Break current block execution on condition
-- REQ-3.5.1.3: Continue to next iteration on condition
+- REQ-3.5.1.2: Break out of the chosen enclosing loop each time the flow reaches the block; a condition comes from placing the block in a branch
+- REQ-3.5.1.3: Continue with the next iteration of the chosen enclosing loop each time the flow reaches the block; a condition comes from placing the block in a branch
 - REQ-3.5.1.4: Halt block (stop test/suite/regression execution)
 - REQ-3.5.1.5: Custom condition evaluation (expression-based)
 - REQ-3.5.1.6: Visual conditional branching (if/elseif/else)
@@ -503,7 +503,7 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 - REQ-5.2.1.50: Layout choices remembered for the browser session (a section, group or panel the user opens, closes, shows, hides or resizes comes back the same on return to the page and after a page load in the same tab; a new tab starts from the defaults)
 
 ##### Accessibility
-- REQ-5.2.1.30: WCAG 2.1 AA compliance
+- REQ-5.2.1.30: WCAG 2.2 AA compliance
 - REQ-5.2.1.31: Full keyboard navigation
 - REQ-5.2.1.32: Screen reader compatibility (ARIA labels)
 - REQ-5.2.1.33: Focus management and visible focus indicators
@@ -581,7 +581,6 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
   - REQ-5.2.6.4.8: Bulk artifact operations
   - REQ-5.2.6.4.9: Bulk report operations
   - REQ-5.2.6.4.10: Bulk configuration operations
-  - REQ-5.2.6.4.11: Bulk user operations (future: multi-user authentication)
   - REQ-5.2.6.4.12: Bulk plugin operations (custom plugins)
 
 #### 5.2.7 MCP Server
@@ -652,11 +651,8 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 
 ### 7.3 Future Considerations
 - FUT-7.3.1: Database migration path
-- FUT-7.3.2: Multi-user authentication
 - FUT-7.3.3: Notification extensions (Teams, email, Slack)
-- FUT-7.3.4: Cloud deployment options
 - FUT-7.3.5: Advanced analytics
-- FUT-7.3.6: AI-powered test generation
 - FUT-7.3.7: Automated test execution in CI/CD
 - FUT-7.3.8: Test failure blocks deployment
 - FUT-7.3.9: Performance benchmarking and optimization
@@ -669,9 +665,7 @@ The system provides dual-interface (CLI/GUI) test orchestration with visual work
 - FUT-7.3.16: Sub-test/nested test calling
 - FUT-7.3.17: Advanced parallel patterns (fork/join)
 - FUT-7.3.18: Container image execution environment for Shell Script and Python plugins
-- FUT-7.3.19: Distributed execution across multiple nodes
 - FUT-7.3.21: Execution time estimation based on historical averages
-- FUT-7.3.22: Parallel test execution in suites
 - FUT-7.3.23: Jenkins/GitLab CI integration
 - FUT-7.3.24: Grafana dashboards integration
 - FUT-7.3.25: Prometheus metrics integration

@@ -558,7 +558,7 @@ The drop handler validates that the drop occurred within the canvas bounds and t
 | Workflow block | Border | 1px solid `--color-border-default` |
 | Workflow block | Border radius | `rounded-lg` (8px) |
 | Workflow block | Padding | 12px |
-| Workflow block | Min width | 120px |
+| Workflow block | Min width | 160px (192px for a Function block) |
 | Workflow block | Icon size | 20px |
 | Workflow block | Label size | `text-sm` (14px) |
 
@@ -687,7 +687,7 @@ Proximity detection uses a distance threshold from the source element's output h
 
 Parallel branches are created on the Parallel control, which carries one lane per branch plus an always-present exit lane. The lanes are the fork; the exit lane is the merge. Because the control owns both, a concurrent region is visible on the canvas as a bounded shape rather than inferred from where edges happen to converge.
 
-**Creating a branch**: Branches are an ordered list on the control's configuration sheet - a row per branch carrying its name, its optional time limit, reorder controls and delete. Adding a row adds a lane; removing one removes its lane and the edge that used it. Branch order in the list is lane order on the block, so the canvas and the list never disagree. A section holds at least two branches, so the last two rows cannot be deleted.
+**Creating a branch**: Branches are an ordered list on the control's configuration sheet - a card per branch carrying its BRANCH badge, its name, its optional time limit, reorder controls and delete. The name is a plain text box with no {x}: it names the lane and is not a value. It is as wide as an If/Else branch name, at most 201 pixels, and gives up what the row lacks, so it is 199 pixels in the window's 880. The time limit is the one value field for a whole number of milliseconds, its box as wide as a Variable Setter row's value, 357 pixels, in plain and in {x} mode, followed by its expand column and its {x} (PARALLEL-3). The expand column stays empty for a number and holds the expand in {x} mode, so the {x} sits in one place on every lane and an expression reads whole. Left empty the time limit means no limit and shows no hint, and a limit below 1 shows `Time Limit must be at least 1` under the box and holds Save. A time limit in {x} mode left blank shows `Time Limit is required` under the box and holds Save, and the save refuses it too; the Section Time Limit follows the general not-set rule. Adding a row adds a lane; removing one removes its lane and the edge that used it. Branch order in the list is lane order on the block, so the canvas and the list never disagree. A section holds at least two branches, so the last two rows cannot be deleted.
 
 **Wiring a branch**: Each branch lane accepts one outgoing edge, the head of that branch's sub-flow, following the same single-egress-per-handle rule as every other lane in the builder. The sub-flow is authored exactly like any other stretch of canvas and dead-ends at its last block - branch bodies do not connect onward to blocks after the section.
 
@@ -723,7 +723,7 @@ Block parameter configuration provides a floating-sheet interface for editing a 
 
 **Version Management**: The header displays a version dropdown (format: "2.18 ▼") allowing users to select which version to use. Footer buttons provide access to changelog and detailed documentation.
 
-**Parameter Configuration**: Input fields display in a structured table. Each row shows the field name (with required indicator), its type, and its value. Every Block keeps, edits, checks and runs its fields one way: a Function Block's declared inputs are its fields exactly as a plugin's settings are. Plugin and Function Block rows share one value field, the variable window's value field, followed by two fixed icon columns: expand (two diagonal arrows) and the expression toggle {x} (FIELD-1). Expand opens the field's full editor, or the expression editor in {x} mode. Icons that belong to the value sit inside the field: a clock (a time value) or a lock (a secret) at the left, the reset or the null icon at the right. A masked secret shows dots and is replaced rather than shown. What the field holds and what expand opens follow the field's type:
+**Parameter Configuration**: Input fields display in a structured table. Each row shows the field name (with required indicator), its type, and its value. Every Block keeps, edits, checks and runs its fields one way: a Function Block's declared inputs are its fields exactly as a plugin's settings are. Plugin, control and Function Block rows share one value field, the variable window's value field, followed by two fixed icon columns: expand (two diagonal arrows) and the expression toggle {x} (FIELD-1). Every value box inside a control's own editors - a condition's compare value, a Variable Setter row's value, a Parallel lane's time limit - is the same field with the same two columns (see 15.4.2 Control Blocks, FIELD-14). Expand opens the field's full editor, or the expression editor in {x} mode. Icons that belong to the value sit inside the field: a clock (a time value) or a lock (a secret) at the left, the reset or the null icon at the right. A masked secret shows dots and is replaced rather than shown. What the field holds and what expand opens follow the field's type:
 
 | Field Type | In the Field | Expand Opens |
 |------------|--------------|--------------|
@@ -734,7 +734,7 @@ Block parameter configuration provides a floating-sheet interface for editing a 
 | Choice list | Static dropdown of the declared allowed values that always holds one of them | Nothing: no expand |
 | Array | The list written out as one line of text that can be typed into | The shared "Edit value" sheet with add/remove elements, a Type picker per item, and visual/code mode toggle |
 | Map | The map written out as one line of text that can be typed into | The shared "Edit value" sheet with add/remove rows, duplicate key detection, and visual/code mode toggle |
-| Table | The table written out as one line | Structured tabular data editor via the shared "Edit value" sheet (no table parameters currently declared) |
+| Table | The table written out as one line | Structured tabular data editor via the shared "Edit value" sheet |
 
 Fields with their own editors are the same one-line field, and expand opens their own editor: a time value opens its picker, which ends with Cancel and Save (FIELD-9); Cipher Suites, Multipart Parts, the Shell and Python Arguments, the SQL Out arguments, and OpenSearch Fields and Stats are one-line list fields (FIELD-10).
 
@@ -748,7 +748,7 @@ Parameter types align with WAVE's canonical 7-type system (string, integer, floa
 
 This enables context-sensitive configuration forms where parameters appear only when relevant - for example, a request body field that is visible only when the HTTP method supports a body (POST, PUT, PATCH, DELETE), or a destination path field that appears only when the file operation is copy or move.
 
-**Expression Mode**: Every field WAVE evaluates at run has the expression toggle {x}, which switches between literal input and expression mode. In expression mode, the field value is a pure Python expression evaluated at runtime, and a multi-line expression keeps its line breaks. The expression editor (CodeMirror-based) provides syntax highlighting for the full expression and autocomplete suggestions for available variables and functions. For string composition, users write Python f-strings (e.g., `f"http://{host}:{port}/api"`). Enumeration fields support the same toggle to switch between fixed dropdown selection and expression mode. A field in expression mode that holds nothing is not set: the box shows the default as a gray hint written as a Python literal, and the run uses the default. Switching modes never carries a value across. When the field holds a value, switching asks first, in a dialog that never names the field, with Cancel, Clear & Default and, for text, list, map and table, Clear & Empty, which in expression mode puts in the empty value as an expression (FIELD-7).
+**Expression Mode**: Every field WAVE evaluates at run has the expression toggle {x}, which switches between literal input and expression mode. In expression mode, the field value is a pure Python expression evaluated at runtime, and a multi-line expression keeps its line breaks. The expression editor (CodeMirror-based) provides syntax highlighting for the full expression and autocomplete suggestions for available variables and functions. For string composition, users write Python f-strings (e.g., `f"http://{host}:{port}/api"`). Enumeration fields support the same toggle to switch between fixed dropdown selection and expression mode. A field in expression mode that holds nothing is not set: the box shows the default as a gray hint written as a Python literal, and the run uses the default. A Parallel lane's time limit is the exception: left blank in expression mode it shows `Time Limit is required` and holds Save. Switching modes never carries a value across. When the field holds a value, switching asks first, in a dialog that never names the field, with Cancel, Clear & Default and, for text, list, map and table, Clear & Empty, which in expression mode puts in the empty value as an expression (FIELD-7).
 
 **Output Variable Binding**: The output section allows users to assign element outputs to workflow variables. Each output can be bound to a variable name, making that value available to downstream elements; a binding that names a variable that does not exist yet creates it with the output's type, holding null until the block runs. Output bindings establish the data flow connections between elements in the workflow. Duplicate and copy/paste operations intentionally clear output bindings on the new element - each block instance must have its bindings explicitly configured to avoid multiple blocks silently writing to the same variables.
 
@@ -756,11 +756,11 @@ This enables context-sensitive configuration forms where parameters appear only 
 
 **Validation Feedback**: Required parameters display validation errors inline when empty or invalid. The save action is disabled until all required fields have valid values. Type mismatches and constraint violations show contextual error messages.
 
-**Sheet Positioning and Resize**: The sheet opens viewport-centered (cascading when other sheets are already open) and is draggable by its header anywhere on screen; dragging clamps to the viewport so the header and close button always stay reachable. A thin right-edge resize handle adjusts the sheet width between 520 and 1200 pixels - useful when editing wide parameter tables. Position and width are per-sheet.
+**Sheet Positioning and Resize**: The sheet opens viewport-centered (cascading when other sheets are already open) and is draggable by its header anywhere on screen; dragging clamps to the viewport so the header and close button always stay reachable. A thin right-edge resize handle adjusts the sheet width between 520 and 1200 pixels - useful when editing wide parameter tables. The windows whose rows carry a value beside several other boxes - If/Else, Switch, Assert, While, Wait Until, the Variable Setter and Parallel - open 880 pixels wide, so a row's value fits on one line (FIELD-16). Position and width are per-sheet.
 
-**Sheets Opened from a Sheet**: Every floating sheet is its own window. A sheet opened from inside a configuration sheet - the "Edit value" sheet, the multipart Parts editor, the TLS cipher picker, the file picker, the Profiles binding sheet - opens, drags, resizes, maximizes and clamps against the viewport, never against the sheet it came from. Dragging the configuration sheet leaves those sheets where they are, and each one can be dragged anywhere on screen, including clear of the sheet that opened it. They join the same front-most ordering as every other sheet: clicking one brings it to the front, and Escape closes the front-most sheet only. Pressing the control that opened one while it is still open - a field's edit control, Browse, Profiles - brings that sheet back to the front and pulses it once, as reopening a block's configuration sheet does; it never opens a second copy. Keys and clicks inside such a sheet act on that sheet alone; they never save, close or drag the configuration sheet behind it. A sheet belongs to the page it was opened on, so when that page is blocked by a failed load the sheet is blocked with it; a sheet opened from inside a modal dialog stays within that dialog.
+**Sheets Opened from a Sheet**: Every floating sheet is its own window. A sheet opened from inside a configuration sheet - the "Edit value" sheet, the multipart Parts editor, the TLS cipher picker, the file picker, the Profiles binding sheet - opens, drags, resizes, maximizes and clamps against the viewport, never against the sheet it came from. Dragging the configuration sheet leaves those sheets where they are, and each one can be dragged anywhere on screen, including clear of the sheet that opened it. They join the same front-most ordering as every other sheet: clicking one brings it to the front, and Escape closes the front-most sheet only. Pressing the control that opened one while it is still open - a field's edit control, Browse, Profiles - brings that sheet back to the front and pulses it once, as reopening a block's configuration sheet does; it never opens a second copy. Such a sheet takes keyboard focus when it opens and hands it back to the control that opened it when it closes; when that control is gone, as for a sheet opened through Delete & Edit on a protected value, closing the sheet hands keyboard focus to the field's value box. Keys and clicks inside such a sheet act on that sheet alone; they never save, close or drag the configuration sheet behind it. A sheet belongs to the page it was opened on, so when that page is blocked by a failed load the sheet is blocked with it; a sheet opened from inside a modal dialog stays within that dialog.
 
-**Accessibility**: The sheet is a non-modal panel: there is no focus trap, and clicking outside does not dismiss it (preventing accidental loss of in-progress edits). Escape closes the front-most sheet, routing through the unsaved-changes guard. The header exposes a descriptive ARIA label, tab navigation moves through form fields in logical order, and screen readers announce parameter names, types, and current values. Keyboard users reach the close button in the header tab order.
+**Accessibility**: The sheet is a non-modal panel: there is no focus trap, and clicking outside does not dismiss it (preventing accidental loss of in-progress edits). Escape closes the front-most sheet, routing through the unsaved-changes guard. To assistive technology every floating sheet is a non-modal dialog, named by the visible title in its header, so a screen reader announces that a window opened, what it is called and that the page behind it is still there. A sheet can name the field that takes the cursor when it opens, and it moves focus there itself, so that field is announced as part of the opened window: the variable window names its Name field. Tab moves through form fields in logical order and leaves the sheet after its last control, and screen readers announce parameter names, types, and current values. Every field is announced with its own name, an expression box and a masked secret included, and a field in error is marked invalid and tied to the message under it. Keyboard users reach the close button in the header tab order.
 
 **List and Map Entries**: List items and map entries are edited in the shared editor, every row at one height; text, List, Map and {x} entries open their own editor, a List or Map entry the same editor one level deeper, up to 10 levels. A change that would drop an entry's value (its type or its {x} mode) asks first, and every {x} button in WAVE is one shared toggle.
 
@@ -984,6 +984,80 @@ The popover organizes shortcuts into six sections:
 | | Add where the flow is | Enter |
 | | Add at center | Ctrl+Enter |
 
+#### 15.4.2 Control Blocks
+
+A control Block opens the one Block window (REQ-3.1.1.5) and keeps, edits, checks and runs its fields through the same shared code a plugin or Function Block uses. What a control adds is structure the plain rows table cannot hold - condition rows joined by AND / OR and nested in groups, If/Else branch cards and Switch case cards, Parallel lane cards, the Variable Setter's rows - and that structure keeps the look each subsection below describes: badges, labels, Break switches, AND / OR pills, group frames, and the add, move and delete buttons. Every value box inside it is the one value field, with the same expand and {x} columns as a row of the table (FIELD-14).
+
+**Names and choices**: Branch labels, case names and lane names name a path; they are not values, so they are plain text boxes with no {x}, no Template and no expand. The option choices of Assert, Wait Until and Parallel - Branching Mode, Wait Mode, Join Mode and Fail Current Scope - keep their option section at the bottom of the window, hold a value from the moment the Block is created (FIELD-8) and take no {x}. Break and Continue keep their Target Loop select of the enclosing loops (REQ-3.5.1.2, REQ-3.5.1.3).
+
+**One path**: A control's fields are stored where every Block field is stored, with the same expression and template marks and the same element-type record. One Save writes them and stores only what the user set, one change check decides whether the window holds unsaved edits, and one save check refuses what the run would refuse, with the run's own messages (REQ-3.5.0.3). While a window is open it follows the canvas: a variable renamed or deleted on the canvas reaches the open window's condition rows and Setter rows, as it reaches a plugin's fields.
+
+**Handles that change**: Changing an Assert's Branching Mode replaces its handles, so its Save removes every connection out of it. Switching a Wait Until to Watch, or turning a Try/Catch path off, removes that one handle, and Save removes the connection it carried. Deleting a branch, a case or a lane removes its connection with it. A change that keeps a handle keeps its connection.
+
+**Window width**: The windows of If/Else, Switch, Assert, While, Wait Until, the Variable Setter and Parallel open 880 pixels wide, so a condition row, a Setter row or a lane row fits on one line with its value whole. The CSV Parser and Excel windows keep the standard width: their filter row has no variable box and no type pill, so it fits there (FIELD-16).
+
+##### Condition Rows
+
+If/Else branches, Switch cases, Assert, While and Wait Until build their conditions from one condition row, and the CSV and Excel filters use the same row (CSV-12). In the five control Blocks, rows are joined by AND / OR pills and can be nested in groups; Add Assertion and Add Group sit under each control's list. A filter's rows are always joined by AND, with no OR and no groups.
+
+**A literal row**, left to right: the variable box (the shared variable picker, VARPICK-1), the type pill showing the picked variable's type, or `string`, its start type, on a new row with no variable yet, the operator list, the compare value, its expand, its {x}, then delete and the up / down pair. The compare value is the one value field (FIELD-1), typed by the variable and the operator: a number variable compares with a number, `length equals` takes a whole number, `has key` takes text. It takes the free width of the row. Text and an {x} value have expand; a number has none, and its empty expand slot keeps the {x} column in line with the rows above and below it. Within one nesting level the expand and {x} columns line up on every row. A text compare value can be a template: expand opens the string editor with Literal / Template, and the template's `{{ }}` parts are filled in each time the row is checked. The compare value never takes null and has no null icon; `is null` and `not null` are the way to check for null (REQ-3.1.3.25). An operator that takes no compare value - is null, not null, is empty, is not empty, is true, is false - shows no value, expand or {x}, and Save drops a value or an {x} mark such a row still holds. A Test or Function saved another way, by a recipe, an import or the REST API, is stored the same way, and its recipe readback shows no value for such a row.
+
+**Switching and re-picking**: Switching the compare value's {x} while it holds a value asks first and never carries the value across (FIELD-7). Picking another variable or operator keeps the compare value when it still fits the new type. When a variable pick would drop a value, the shared type-change question asks first (FIELD-13). When an operator change would drop a held compare value, the shared value-loss dialog asks first, titled `Change operator?`, with the body `Changing operator to <operator> will clear <what>. This cannot be undone.` and the confirm button `Change operator`.
+
+**An expression row** keeps its braces marker at the left and its expression box, and has expand in the same column as the literal rows' expand, which opens the expression editor; its {x} slot stays empty, so delete and the up / down pair stay in their column.
+
+**Errors**: A row's problems show on the row as soon as the window opens and while the author types (FIELDERR-1, FIELDERR-3): the box takes the destructive border and a one-line message sits under it, and the row grows so the message never covers the AND / OR pill below. A row with no variable shows `Choose a variable.` under the variable box. A compare value nobody filled in - an empty box, or an empty expression in {x} - shows `Value is required` under the value; empty text typed on purpose shows `<empty string>` and compares with empty text (FIELD-4). A number that breaks the one number rule shows the one field's message. A branch or case card holding an error shows the warning mark after its badge, an empty condition list shows `At least one assertion is required`, and the footer note reads `Save is disabled: the settings have errors`.
+
+**Save check**: The save check reads every condition row at any group depth as it reads a Block field: a row needs a variable, and a compare value when its operator takes one; a compare value must fit its type; a checked variable, an expression row or a compare-to expression that names a variable that is not declared, or an expression that would change data, is refused (Expressions Are Read-Only). The rows of one list are joined by AND / OR: two rows side by side with nothing between them are refused with `Condition items in '<list place>' must be joined by 'and' or 'or'`, and an AND / OR that stands first, last or next to another one is refused with `'and' and 'or' go between two conditions`. The save reports one finding per list, at its first break, and the run refuses such a list with the same message. The window always joins the rows it adds, so only a Test written another way, by an import or a recipe, can hold such a list. Conditions keep their own evaluator at run, because a While, a Wait Until and a Switch check them again each time they reach them.
+
+##### REQ-3.5.1.1 Conditional execution block (if/else)
+##### REQ-3.5.1.5 Custom condition evaluation (expression-based)
+##### REQ-3.5.1.6 Visual conditional branching (if/elseif/else)
+
+**If/Else Block Rendering**: The If/Else block supports N output handles (one per branch). The block width expands dynamically as branches are added, maintaining comfortable spacing between handles. Each handle is labeled with the user-defined branch label, or falls back to the branch type ("if", "else if", "else"). Handle IDs are stable monotonic identifiers (e.g., `branch_0`, `branch_1`) that survive reordering and label changes. At design time, all handles render in neutral color. After execution, the taken branch handle is highlighted and untaken branches are dimmed. A lane wire of any control is highlighted only when the run took that lane from its Block, so where several branches join one Block the wires of the untaken branches stay dimmed.
+
+**If/Else Configuration**: The configuration window renders a stacked collapsible section editor. Each branch appears as a card with a type badge (IF/ELSE IF/ELSE), expand/collapse toggle, user-defined label input, and for else-if branches, up/down reorder arrows. The label names the branch's handle; it is a plain text box with no {x} (FIELD-14). Each if/else-if branch body holds condition rows (Condition Rows above): literal comparisons, expression rows, AND/OR combinators and groups. The else branch has no conditions. Buttons below the branch list add new else-if or else branches, with the else button disabled when one already exists. The if branch comes first, the else branch last, and every if and else-if branch carries at least one condition; the window and the save check refuse anything else. A condition row on a null value follows the check rule of REQ-3.1.3.25.
+
+##### REQ-3.5.1.20 Switch/Case multi-branch decisions
+
+**Switch/Case Block Rendering**: The Switch block renders one output handle per case, an optional `default` handle, and an always-present `then` handle, in that order. Block width expands by one handle slot per lane, reusing the branching-block width rule. Handle IDs are stable identifiers that survive reordering and renaming. Lane color encodes role: case lanes take the conditional category color, `default` a muted neutral, and `then` the same neutral the other container controls use for their egress, so branch, fallback and exit are distinguishable at rest. Handles carry no rendered text; the branch name is the handle's accessible name and surfaces in a hover tooltip, matching If/Else and Try/Catch. After execution, every lane that ran is highlighted and the untaken lanes are dimmed - unlike If/Else, more than one case lane can be highlighted in a single run.
+
+**Switch/Case Configuration**: The configuration window renders the same stacked collapsible branch-card editor as If/Else, sharing its card shell. Each case card carries a CASE badge, expand/collapse toggle, branch name input, a Break switch, up/down reorder arrows, and delete - every case is equal, so none of these are withheld from the first card. The branch name is a plain text box with no {x} (FIELD-14). The card body holds condition rows (Condition Rows above). The Break switch sits in the card header so a collapsed card still reveals whether that case falls through; no further annotation marks fall-through. An optional DEFAULT card sits last with a neutral badge, no conditions, no Break switch, and a body line stating it runs when no case matched or when a case above falls through. Buttons below the list add a case or the default, with the default button disabled when one already exists. A Switch holds at least one case, every case carries at least one condition, and the default sits last; the window and the save check refuse anything else.
+
+**Variable Selection**: Every surface that picks an existing variable - the condition rows of Switch, If/Else, Assert, While and Wait Until, the table transform's filters and sorts, output bindings and variable-reference parameters - uses one searchable variable picker. Long names truncate with the full name available on hover while the type label stays pinned and legible, and typing narrows the list. Namespace roots (`system`, `suite`, `regression`) are not variables and are never offered for selection; only their members appear, each with its real type. Expression autocomplete keeps offering the bare roots, since there the root is the prefix the author types before dotting into it.
+
+##### REQ-3.5.1.11 Assertion block with success/failure branches
+
+**Assert Configuration**: The Assert's condition rows sit directly under INPUT PARAMETERS (Condition Rows above), with Add Assertion and Add Group under them; OUTPUT VARIABLES offers Passed. Below it the BRANCHING MODE section offers Single and Split, each with a one-line description, and under a divider the Fail Current Scope checkbox with its description. Branching Mode is required and starts on Split, Fail Current Scope starts off, and neither takes {x}. Assert and Wait Until draw this option section with one shared component. Changing Branching Mode replaces the Assert's handles, so Save removes every connection out of it.
+
+##### REQ-3.5.1.17 While loop with condition
+
+**While Block Rendering**: After execution, the body wire is highlighted when the loop ran its body in its last pass; a body that never ran, because the condition was false at the first check, paints skipped and its wire is dimmed, as for every loop.
+
+**While Configuration**: The rows table holds Mode and, in its Advanced group, Max Iterations and Timeout, all on the one value field; Max Iterations is at least 1. The While's condition rows sit under the table (Condition Rows above), with Add Assertion and Add Group, and at least one condition is required. OUTPUT VARIABLES offers Index.
+
+##### REQ-3.5.4.3 Wait until condition with timeout
+
+**Wait Until Block Rendering**: The Wait Until block renders its output handles according to
+the wait mode. In Retry mode it carries a retry lane followed by the always-present `then`
+lane; in Watch mode it carries `then` alone and reads as a sequential block. Block width
+follows the same handle-slot rule the other container controls use, so it widens only in
+Retry mode. Lane color encodes role: the retry lane takes the repeated-sub-flow color the
+loop bodies use, and `then` takes the container-exit neutral. Handles carry no rendered
+text; the lane name is the handle's accessible name and surfaces in a hover tooltip. After
+execution, the lanes that ran are highlighted and untaken lanes are dimmed.
+
+**Wait Until Configuration**: The configuration window renders the standard input-parameter table above the Wait Until's condition rows (Condition Rows above), the same composition the While loop uses. The table leads with the required timeout and the check interval, and carries an optional message describing what the wait was for. Output variables offer the two values the control produces - whether the condition came true and how long the wait took. A wait-mode radio section sits where Assert's branching-mode section sits, offering Retry and Watch with a one-line description each, and below its divider the same fail-current-scope checkbox Assert offers, which decides whether reaching the time limit fails the block and stops the flow or is informational only. Wait Mode starts on Retry and Fail Current Scope starts off, and neither takes {x}. Assert and Wait Until render this radio-plus-checkbox section through one shared component rather than each hand-rolling it.
+
+**Switching modes**: Changing from Retry to Watch removes the retry lane, and Save removes the connection that lane carried, the way a deleted branch takes its connection with it.
+
+##### REQ-3.5.4.4 Poll-based condition checking
+
+**Progress while waiting**: A Wait Until legitimately occupies the canvas for a long time. The
+block carries the ordinary running badge for the whole wait, and the run log carries the
+per-round trace, so the reader can tell a live wait from a hung one without the canvas
+putting per-round traffic on the wire.
+
 #### 15.4.3 Test Persistence
 
 ##### REQ-3.2.1.1 Save workflow as test
@@ -1037,7 +1111,7 @@ The Save button uses the small spinner variant (16px) that replaces the button t
 
 | Canvas Concept | Test Model Field | Transformation |
 |----------------|------------------|----------------|
-| Nodes array | workflow_blocks | Each node becomes a WorkflowBlock with type, parameters, position |
+| Nodes array | workflow nodes | Each node keeps its type, parameters and position |
 | Edges array | block connections | Edge graph preserves control flow structure (branching and convergence) |
 | Node data | block configuration | Plugin type, parameters, variable bindings preserved |
 | Node positions | layout metadata | X/Y coordinates stored for canvas restoration on load |
@@ -1052,22 +1126,6 @@ The Save button uses the small spinner variant (16px) that replaces the button t
 | Parallel | Explicit Parallel control | Parallel control manages concurrent execution |
 
 **Branch Convergence**: Control elements create conditional branches that converge on a common successor element (many-to-one), so execution continues regardless of which branch was taken. The transformation preserves these convergence points in the model. No explicit merge block is required - downstream blocks simply accept multiple incoming edges. If/Else takes exactly one branch and hands it to the main flow. Switch/Case can take several branches in one pass and returns from each, converging instead on its own `then` egress.
-
-##### REQ-3.5.1.1 Conditional execution block (if/else)
-##### REQ-3.5.1.5 Custom condition evaluation (expression-based)
-##### REQ-3.5.1.6 Visual conditional branching (if/elseif/else)
-
-**If/Else Block Rendering**: The If/Else block supports N output handles (one per branch). The block width expands dynamically as branches are added, maintaining comfortable spacing between handles. Each handle is labeled with the user-defined branch label, or falls back to the branch type ("if", "else if", "else"). Handle IDs are stable monotonic identifiers (e.g., `branch_0`, `branch_1`) that survive reordering and label changes. At design time, all handles render in neutral color. After execution, the taken branch handle is highlighted and untaken branches are dimmed.
-
-**If/Else Configuration**: The configuration modal renders a stacked collapsible section editor. Each branch appears as a card with a type badge (IF/ELSE IF/ELSE), expand/collapse toggle, user-defined label input, and for else-if branches, up/down reorder arrows. Each if/else-if branch body embeds a full assertion builder (literal comparisons, expression rows, AND/OR combinators). The else branch has no conditions. Buttons below the branch list add new else-if or else branches, with the else button disabled when one already exists. A condition row on a null value follows the check rule of REQ-3.1.3.25.
-
-##### REQ-3.5.1.20 Switch/Case multi-branch decisions
-
-**Switch/Case Block Rendering**: The Switch block renders one output handle per case, an optional `default` handle, and an always-present `then` handle, in that order. Block width expands by one handle slot per lane, reusing the branching-block width rule. Handle IDs are stable identifiers that survive reordering and renaming. Lane color encodes role: case lanes take the conditional category color, `default` a muted neutral, and `then` the same neutral the other container controls use for their egress, so branch, fallback and exit are distinguishable at rest. Handles carry no rendered text; the branch name is the handle's accessible name and surfaces in a hover tooltip, matching If/Else and Try/Catch. After execution, every lane that ran is highlighted and the untaken lanes are dimmed - unlike If/Else, more than one case lane can be highlighted in a single run.
-
-**Switch/Case Configuration**: The configuration modal renders the same stacked collapsible branch-card editor as If/Else, sharing its card shell. Each case card carries a CASE badge, expand/collapse toggle, branch name input, a Break switch, up/down reorder arrows, and delete - every case is equal, so none of these are withheld from the first card. The card body embeds the full assertion builder. The Break switch sits in the card header so a collapsed card still reveals whether that case falls through; no further annotation marks fall-through. An optional DEFAULT card sits last with a neutral badge, no conditions, no Break switch, and a body line stating it runs when no case matched or when a case above falls through. Buttons below the list add a case or the default, with the default button disabled when one already exists.
-
-**Variable Selection**: Every surface that picks an existing variable - the assertion builder inside Switch, If/Else, Assert and While, the table transform's filters and sorts, output bindings and variable-reference parameters - uses one searchable variable picker. Long names truncate with the full name available on hover while the type label stays pinned and legible, and typing narrows the list. Namespace roots (`system`, `suite`, `regression`) are not variables and are never offered for selection; only their members appear, each with its real type. Expression autocomplete keeps offering the bare roots, since there the root is the prefix the author types before dotting into it.
 
 **Execution Ordering**: The transformation traverses the edge graph starting from the Start node. For control elements, child branches are captured within the control block's structure. Convergence edges (multiple sources to single target) indicate where branches rejoin the main flow.
 
@@ -1131,50 +1189,17 @@ The Save button uses the small spinner variant (16px) that replaces the button t
 - Clicking navigation links while dirty
 - Browser tab/window close (beforeunload event)
 
-##### REQ-3.5.4.3 Wait until condition with timeout
-
-**Wait Until Block Rendering**: The Wait Until block renders its output handles according to
-the wait mode. In Retry mode it carries a retry lane followed by the always-present `then`
-lane; in Watch mode it carries `then` alone and reads as a sequential block. Block width
-follows the same handle-slot rule the other container controls use, so it widens only in
-Retry mode. Lane color encodes role: the retry lane takes the repeated-sub-flow color the
-loop bodies use, and `then` takes the container-exit neutral. Handles carry no rendered
-text; the lane name is the handle's accessible name and surfaces in a hover tooltip. After
-execution, the lanes that ran are highlighted and untaken lanes are dimmed.
-
-**Wait Until Configuration**: The configuration modal renders the standard input-parameter
-table above the shared assertion builder, the same composition the While loop uses. The
-table leads with the required timeout and the check interval, and carries an optional
-message describing what the wait was for. Output variables offer the two values the control
-produces - whether the condition came true and how long the wait took. A wait-mode radio
-section sits where Assert's branching-mode section sits, offering Retry and Watch with a
-one-line description each, and below its divider the same fail-current-scope checkbox Assert
-offers, which decides whether reaching the time limit fails the block and stops the flow or is
-informational only. Assert and Wait Until render this radio-plus-checkbox section through one
-shared component rather than each hand-rolling it.
-
-**Switching modes**: Changing from Retry to Watch removes the retry lane, so any wiring on
-that lane is reported by the same stale-handle validation that covers Assert's split-to-single
-transition. Nothing is silently discarded.
-
-##### REQ-3.5.4.4 Poll-based condition checking
-
-**Progress while waiting**: A Wait Until legitimately occupies the canvas for a long time. The
-block carries the ordinary running badge for the whole wait, and the run log carries the
-per-round trace, so the reader can tell a live wait from a hung one without the canvas
-putting per-round traffic on the wire.
-
 #### 15.4.4 Variable Setter Control Editor
 
 ##### REQ-3.4.1.14 Variable setter control
 
-The Variable Setter is a flow control that provides declarative variable assignment within workflows. Its config modal uses a purpose-built inline editor for first-class variable manipulation.
+The Variable Setter is a flow control that provides declarative variable assignment within workflows. Its window lists the variables it sets as rows, and each row's value is the one value field every Block field uses (FIELD-1), so a row's value is typed, checked, switched to {x} and expanded exactly as a Block field is.
 
-**Inline Variable Rows (VARSET-1)**: The config modal displays variables as editable rows directly in the modal body. Each row contains: Name field, Type selector, Value editor, Expression toggle, and Delete button. A "+ Add" button appears at the top-right of the variables section. All variables are always visible.
+**Inline Variable Rows (VARSET-1)**: The window displays variables as editable rows in its INPUT PARAMETERS section, under a Variables label with a "+ Add" button at its right. The columns are Name, Type, Secret and Value, labeled above the first row; after the value come its expand, its {x} and the row's Delete button, each in a column of its own so they line up on every row. The window opens 880 pixels wide so a row's value fits on one line (FIELD-16). All variables are always visible.
 
 **Adding Variables (VARSET-2)**: The "+ Add" button inserts a new empty row inline at the bottom of the list. The user fills in name, picks type, and enters a value directly in the row. No dialog or confirmation step.
 
-**Name Field with Autocomplete (VARSET-3)**: The name field supports both defining new variable names and searching existing test-scope variables via autocomplete. Only test-scope variables appear in the autocomplete suggestions. Typing filters the suggestion list; selecting an existing variable populates the name and locks the type (per VARSET-5).
+**Name Field with Autocomplete (VARSET-3)**: The name field supports both defining new variable names and searching the existing variables of the flow the Block runs in via autocomplete (REQ-3.4.3.8). In a Test only test-scope variables appear in the suggestions; inside a Function, that Function's own variables and its declared outputs appear, never its read-only inputs. Typing filters the suggestion list; selecting an existing variable populates the name and locks the type (per VARSET-5).
 
 **No Shadowing (VARSET-4)**: A name that matches a suite-scoped or regression-scoped variable draws no warning, because a setter's variables never shadow those levels: suite and regression variables are read only through their namespaces (`suite.x`, `regression.x`). A bare namespace keyword (`system`, `suite`, `regression`) is rejected as a name with a validation error.
 
@@ -1183,29 +1208,25 @@ The Variable Setter is a flow control that provides declarative variable assignm
 | Scenario | Type Selector State | Default |
 |----------|-------------------|---------|
 | New variable (name not in store) | Active dropdown | "string" |
-| Existing variable (from autocomplete) | Disabled, shows declared type | N/A |
+| Existing variable (from autocomplete) | Disabled, shows the variable's declared type as it is now | N/A |
 
-**Expression Mode Per Variable (VARSET-6)**: Each variable row has its own expression toggle. Activating expression mode replaces the value field with an ExpressionField. The type selector follows VARSET-5 behavior regardless of expression mode. Standard literal-to-expression and expression-to-literal conversion rules apply.
+An existing variable's type is read from the variable whenever the window opens and when the setter runs, never from a copy kept in the Block, so a later change of the variable's type shows on the row and decides how the row's value is read; a change made while the window is open shows on its row at once. A plain value that no longer fits the variable's new type is dropped when the window opens, or as soon as the variable is retyped while the window is open, and the row shows an empty value with `Value is required`, the same rule as a Function Block input whose value no longer fits (FNCFG-9); a plain value that still fits stays, and an expression or template row is kept as written. A Test whose setter still holds such a value is refused at Save with the save check's type message. Changing a new row's Type sets its value to the new type's default; when the row holds a value that would be lost, `Change variable type?` asks first, as in the variable window, and a row that holds nothing changes at once. A row changed to true / false has its Secret box cleared (VARSET-11).
 
-**Complex Type Value Editors (VARSET-7)**: For array, map, and table types, the value cell shows a compact summary with an Edit button:
+**Expression Mode Per Variable (VARSET-6)**: Each row's {x} switches its value between a plain value and an expression. Switching while the value holds something asks first and never carries the value across (FIELD-7). The type selector follows VARSET-5 behavior regardless of expression mode. An {x} row left blank shows `Value is required` under its value and holds Save. Expand on an {x} row opens the expression editor, titled `Edit <name>` with the row's name, or `Edit expression` while the row has no name.
 
-| Type | Summary Format | Edit Action |
-|------|---------------|-------------|
-| Array | "3 items" | Opens existing array modal editor |
-| Map | "2 pairs" | Opens existing map modal editor |
-| Table | "5 rows x 3 col" | Opens existing table modal editor |
+**Value Field (VARSET-7)**: A row's value is the one value field (FIELD-1), typed by the row's Type: text typed on the line, a number in a box that keeps every digit, true / false as a checkbox, and a list, map or table written out as one line that can be typed into. Text, lists, maps, tables and {x} have expand, which opens the shared Edit value sheet - the string editor with Literal / Template, or the Visual / Code editor of a list, map or table (VMGR-84, VMGR-85) - or, in {x}, the expression editor; numbers and true / false have none. A row's value is a data field, so the null icon (∅) sits inside it at the right end and writes null, and clearing a value of any type but text gives null (FIELD-5). A template row shows its text in the expression box with only its `{{ }}` parts in the expression color. A template row, an {x} row and a masked secret have no null icon. Inside a list or map value each first-level entry has its own mode - plain, {x}, or for a text entry Template - and a value holding {x} entries draws them as `{{ expr }}` in the line and is changed only through expand (FIELD-6). Each row's field owns its own sheets, so expanding one row never takes away another row's open sheet.
 
-These reuse the standard modal editors for complex types.
-
-**Inline Per-Row Validation (VARSET-8)**: Each row validates independently with visual feedback:
+**Inline Per-Row Validation (VARSET-8)**: Each row validates independently. Every error shows from the moment the window opens and follows typing, like every other window error (FIELDERR-3): the box takes the red border, a one-line message sits under it, and the row grows to make room. The boxes of a row stay on one line whatever shows under one of them: a message, or the name's character counter, sits under its box and the row grows by its line.
 
 | Severity | Border Color | Conditions |
 |----------|-------------|------------|
-| Error (red) | Red border + message | Invalid Python identifier, duplicate name in this setter, Python keyword, namespace keyword, a name a profile alias uses, a Function input name |
+| Error (red) | Red border + message | Name: empty (`Name is required`), invalid Python identifier, duplicate name in this setter, Python keyword, namespace keyword, a name a profile alias uses, a Function input name. Value: an {x} left blank (`Value is required`), a number that breaks the one number rule |
 
-**Value Starts on the Type Default (VARSET-9)**: When an existing variable is selected from autocomplete, the value field starts on its type's default (empty text, `0`, `false`, an empty list, map or table), never on the variable's current value. The setter's purpose is to SET new values, not display current ones.
+**Value Starts on the Type Default (VARSET-9)**: When an existing variable is selected from autocomplete, or a typed name matches an existing variable exactly, the value field starts on its type's default (empty text, shown as `<empty string>`, `0`, `false`, an empty list, map or table), never on the variable's current value. The setter's purpose is to SET new values, not display current ones.
 
-**Empty State (VARSET-10)**: When the modal opens with no variables configured, it displays one empty row ready for input with the name field auto-focused. This makes the most common action (adding the first variable) immediate.
+**Empty State (VARSET-10)**: When the window opens with no variables configured, it displays one empty row ready for input with the name field auto-focused and `Name is required` under it (VARSET-8). This makes the most common action (adding the first variable) immediate.
+
+**Secret Rows (VARSET-11)**: The Secret box makes the row's variable secret (SECUI-3). A stored secret value shows the masked face - a lock, a pencil and dots - with no expand and no Template, and is announced with the row's name; its {x} asks to discard the secret first (FIELD-1). The Secret box is unavailable on a true / false row, and when a row's Type changes to true / false its Secret box is cleared. A Save that would make an existing plain variable secret asks first (SECUI-12).
 
 #### 15.4.5 XML Parser Query Editor
 
@@ -1280,7 +1301,7 @@ Three classes drive every routing decision:
 |-------|-----------|----------|---------------------------|-------------------|
 | Fatal | Test cannot be parsed or loaded. | Missing workflow, invalid node array, cycle detected | None - test cannot open | Not auto-fixable |
 | Invisible (structural) | The workflow graph or its references are malformed in ways the user cannot detect by inspection. | Missing node IDs, missing positions, dangling edges, undeclared variable bindings, cross-scope edges, namespace-targeting setters | Hidden - the canvas would render normally despite the issue | Auto-fixed by the backend write-path pipeline and by the fix endpoint; an undeclared variable is only fixed by the fix endpoint or the user's Fix All |
-| Visible (incomplete) | An element is on the canvas but a required parameter is unfilled, or an output binding points at a wrong-type variable. | Required parameter missing, required parameter empty, output binding type mismatch | Visible via the alert icon on the affected block | Not auto-fixable by the backend - the user must address them; an output binding type mismatch in a stored test is repaired on the canvas when the test opens (Load-Time Routing) |
+| Visible (incomplete) | An element is on the canvas but a required parameter is unfilled, a control's branches, cases or lanes break its structure rules, or an output binding points at a wrong-type variable. | Required parameter missing, required parameter empty, an if branch with no condition, a Parallel with one branch, output binding type mismatch | Visible via the alert icon on the affected block | Not auto-fixable by the backend - the user must address them; an output binding type mismatch in a stored test is repaired on the canvas when the test opens (Load-Time Routing) |
 
 ##### Persistent Alert Badge
 
@@ -1302,7 +1323,7 @@ When validation needs to surface findings to the user, a single non-dismissible 
 | Load with fatal error | Cannot Load Test | Close (navigates to the tests list), Delete Test |
 | Load with invisible (auto-fixable) errors | Test Issues Found | Close (keeps the test open), Fix All |
 
-Closing the modal after a Save, Run, or Debug attempt leaves the user on the canvas and activates the pulse state on every block referenced in the modal's issue list. Closing the modal after a fatal Load attempt navigates the user back to the tests list, because the test cannot be safely worked with while structural issues remain; closing it after a non-fatal Load keeps the test open. Fix All on the Save, Run or Debug modal declares each undeclared variable on the canvas with the type the backend inferred, holding null, keeps every other unsaved edit and dismisses the modal; the user then repeats the action. Fix All on the Load modal calls the fix endpoint, replaces the canvas with the cleaned workflow, and dismisses the modal; if visible warnings remain after the fix, the alert icons render statically on those blocks (no pulse).
+Closing the modal after a Save, Run, or Debug attempt leaves the user on the canvas and activates the pulse state on every block referenced in the modal's issue list. Closing the modal after a fatal Load attempt navigates the user back to the tests list, because the test cannot be safely worked with while structural issues remain; closing it after a non-fatal Load keeps the test open. Fix All on the Save, Run or Debug modal declares each undeclared variable on the canvas with the type the backend inferred, holding null, keeps every other unsaved edit and dismisses the modal; the user then repeats the action. Fix All on the Load modal calls the fix endpoint, replaces the canvas with the cleaned workflow, and dismisses the modal; if visible warnings remain after the fix, the alert icons render statically on those blocks (no pulse). While the list holds an edge identifier that two edges share, the Load modal offers no Fix All and names no fix on any row, because the fix endpoint refuses such a test and repairs nothing. If the fix endpoint refuses the test, the modal stays open and lists the findings the refusal names. If the test is no longer on the server, the modal closes and the Test not found dialog a Save raises takes its place, since retrying cannot help.
 
 ##### Load-Time Routing
 
@@ -1331,28 +1352,30 @@ The unified modal uses the standard non-dismissible AlertDialog primitive. Maxim
 
 #### 15.4.7 Note Control
 
-The Note is a free-form annotation card on the canvas, visually distinct from execution-bearing blocks. It serves as a sticky-note style element for documenting workflows, marking TODOs, or labeling sections of complex flows. The Note is the single explicit exception to the canonical element-node visual structure (§ 15.4.8): it has no flow handles, no cog button, no dig-in glyph, and its persistent status bar morphs between an idle layout and an edit layout. All other rules from § 15.4.8 (persistent status bar always visible, badges left / actions right, selection halo only) apply unchanged.
+The Note is a free-form annotation card on the canvas, visually distinct from execution-bearing blocks. It serves as a sticky-note style element for documenting workflows, marking TODOs, or labeling sections of complex flows. The Note is the single explicit exception to the canonical element-node visual structure (§ 15.4.8): it has no cog button and no dig-in glyph, and its persistent status bar morphs between an idle layout and an edit layout. All other rules from § 15.4.8 (persistent status bar always visible, badges left / actions right, selection halo only) apply unchanged.
 
-**Visual Appearance**: The Note appears as a colored card with a dashed muted border and tinted background in idle mode. Five color presets are available (Yellow, Pink, Blue, Green, Slate). A new Note starts Slate. Each preset uses a light tint for the card fill with a matching muted border, adapting automatically to dark mode. When the Note has no text, the body shows the placeholder "Add your note here..." in muted italic.
+**Visual Appearance**: The Note appears as a colored card with a dashed muted border and tinted background in idle mode. Five color presets are available (Yellow, Pink, Blue, Green, Slate). A new Note starts Slate. Each preset uses a light tint for the card fill with a matching muted border, adapting automatically to dark mode. When the Note has no text, the body shows the placeholder "Add your note here…" in muted italic.
 
-**No flow handles**: Notes do not have input or output handles. They sit on the canvas as annotations only; they are not part of the execution graph and cannot be connected by edges. Removing the handles is the simplest contract that matches their annotation-only role and prevents the user from wiring a Note into a flow that the runtime would ignore.
+**Flow handles**: A Note has one input and one output handle, like other Blocks, so it can stand in a flow as a placeholder for a Block not yet added; where paths join, as after an If/Else, it shows one input for each connection coming in, as a Block does. When the run reaches a Note, it passes the flow straight on, with no outputs and no side effects, at the top of the flow and inside any body, section, branch or lane. A Note that nothing connects to is an annotation only, and the run never reaches it.
 
 **Modes and Transitions**: A Note has two modes; selection is a state inside either mode and only changes the halo.
 
 | Mode | Border | Persistent status bar contents | Trigger to enter |
 |------|--------|--------------------------------|------------------|
 | Idle | Dashed, color preset's muted border | Kebab only | Default; also entered when leaving Edit |
-| Edit | Solid 2 px blue | Color picker (left); accept (green check) + cancel (red X) (right) | Double-click body, kebab > Edit, or keyboard activation |
+| Edit | Solid 2 px blue | Color picker (left); accept (green check) + cancel (red X) (right) | Double-click body or More options (kebab) > Edit; Enter or Space on a focused Note selects it |
 
 Selection in either mode adds the dashed halo from § 15.4.1.5; it does not change the bar's contents or the body border. Idle mode and Edit mode differ in both bar contents and body border simultaneously - this is the single allowed chrome morph and applies only to Notes.
 
 **Status bar (idle)**: A slim 32-pixel bar with the color preset's tint as background. The right cluster contains a kebab button only. The left cluster is empty. The kebab menu provides: Duplicate, Copy, Cut, Unlink, Delete, and Edit (which enters Edit mode). Actions specific to execution-bearing blocks (Configure, Profiles, Skip, Disable) are not available.
 
-**Status bar (edit)**: Same 32-pixel slim bar, same color tint. The left cluster shows a single color-dot button - clicking opens a vertical dropdown of all five color presets as labeled swatches. The right cluster shows an accept button (green check) and a cancel button (red X). Accept commits the textarea contents and returns to Idle; Cancel discards changes and returns to Idle. Escape on the textarea is equivalent to Cancel; nothing on the textarea is equivalent to Accept until the user activates the accept button.
+**Status bar (edit)**: Same 32-pixel slim bar, same color tint. The left cluster shows a single color-dot button - clicking opens a vertical dropdown of all five color presets as labeled swatches. The right cluster shows an accept button (green check) and a cancel button (red X). Accept commits the textarea contents and returns to Idle; Cancel restores the text only and returns to Idle. A color picked in Edit mode applies at once and stays after Cancel. Escape on the textarea is equivalent to Cancel; nothing on the textarea is equivalent to Accept until the user activates the accept button.
 
-**Inline Text Editing**: Entering Edit mode focuses an in-place textarea over the body. The textarea expands vertically as the user types, growing the card up to the maximum total card height; beyond that, the textarea scrolls internally. Scrolling and panning the canvas do not interfere with text editing. The body border switches to solid blue during Edit, providing an unambiguous "you are editing" affordance distinct from the dashed selection halo.
+**Inline Text Editing**: Entering Edit mode focuses an in-place textarea over the body. The textarea expands vertically as the user types, with no height limit; when the text is taller than the card, the body scrolls internally. Scrolling and panning the canvas do not interfere with text editing. The body border switches to solid blue during Edit, providing an unambiguous "you are editing" affordance distinct from the dashed selection halo.
 
-**Color Picker**: The color picker lives in the status bar's left cluster but only in Edit mode. To recolor an existing Note without changing its text, the user enters Edit mode, picks a color (the swatch dropdown closes immediately on selection and the card color updates live), and Accepts to keep both the (unchanged) text and the new color. There is no canvas-visible affordance to change color outside Edit mode - this keeps the idle status bar to its single kebab and matches the "Notes morph only on Edit" rule.
+**Color Picker**: The color picker lives in the status bar's left cluster but only in Edit mode. To recolor an existing Note without changing its text, the user enters Edit mode, picks a color (the swatch dropdown closes immediately on selection and the new color applies at once), and leaves Edit mode with Accept or Cancel; the new color stays either way, since Cancel restores the text only. There is no canvas-visible affordance to change color outside Edit mode - this keeps the idle status bar to its single kebab and matches the "Notes morph only on Edit" rule.
+
+**Stored fields**: A Note's text and color are its two declared fields, stored and save-checked like any Block field: the text is free text, empty by default, and the color is one of the five presets, Slate by default. They are edited only on the canvas, as above; a Note has no configuration window.
 
 **Resizing**: The Note is resizable in all directions (vertical, horizontal, diagonal). Resize affordance is cursor-only - no visible grab handles. Minimum size is 120 x 60 pixels. The status bar height contributes to the visual bottom of the card, so dragging the bottom edge resizes from the bar's bottom.
 
@@ -1364,7 +1387,7 @@ The card is a three-region structure stacked top to bottom: input handle row, bo
 
 ##### Sizing
 
-Element blocks have a width on creation that depends on how they were created, a user-controlled resize range, and a body that grows vertically only when the description is set. The status bar height is fixed.
+Element blocks have a width on creation that depends on how they were created, a width the user can resize within a range, and a height that follows their content: the body grows vertically only when the description is set or expanded. The status bar height is fixed.
 
 | Aspect | Value |
 |--------|-------|
@@ -1373,13 +1396,14 @@ Element blocks have a width on creation that depends on how they were created, a
 | Minimum width | 160 pixels (192 pixels for a Function block) |
 | Maximum width | 360 pixels |
 | Body height, title only | 44 pixels |
-| Body height, with description | 72 pixels (title row + 2-line description clamp) |
-| Status bar height | 32 pixels |
-| Maximum total card height (auto-grow ceiling) | 120 pixels |
+| Body height, with description | 62.5 pixels with one description line, 79 pixels with two: the title row, a 4-pixel gap and 16.5 pixels per line; the description wraps to the card's width and shows at most two lines until it is expanded |
+| Status bar height | 29 pixels: a 28-pixel bar and its 1-pixel bottom border |
+| Card height, title only | 73 pixels, body and status bar |
+| Card height, with description | 91.5 pixels with one line, 108 pixels with two; an expanded description adds 16.5 pixels for each further line |
 
 A block placed by hand from the palette starts at the canvas default width, which fits its auto-generated name. A block created from a recipe carries the author's descriptive name from the start, so it is sized on creation to fit that name within the resize bounds. A control whose handle row needs more room than its name is stored at the width its handles draw, which is the width the canvas shows for it either way. The fitted width is stored with the block like a manual resize, and the auto-layout spaces columns by the stored widths so wide blocks never overlap side by side.
 
-A selected card is resizable from every edge and corner, within the width bounds above and a height range of 44 to 240 pixels; the grab areas carry no visible chrome, so the card's outline stays clean. A card with no user-applied height sizes itself from the description state. User-applied width and height both persist across reloads as part of the block's storage payload and survive a recipe amend, the same way a dragged position does.
+A selected card is resizable in width only, from its left and right edges, within the width bounds above; the grab areas carry no visible chrome, so the card's outline stays clean. A card's height is never set by hand: it follows the title and the description, which shows at most two lines until the user expands it. A user-applied width and the description's expanded state persist across reloads as part of the block's storage payload and survive a recipe amend, the same way a dragged position does.
 
 ##### Title and description
 
@@ -1439,7 +1463,7 @@ The kebab carries no key of its own because it opens the same menu right-clickin
 
 ##### Handles
 
-Input and output handles attach to the top and bottom edges of the body. Their counts and positions are dictated by the element's parameter declarations and branching mode (where applicable). Handles are independent of the status bar; the status bar sits below the body and never overlaps a handle. Notes are the explicit exception: they have no input or output handles (§ 15.4.7).
+Input and output handles attach to the top and bottom edges of the body. Their counts and positions are dictated by the element's parameter declarations and branching mode (where applicable). Handles are independent of the status bar; the status bar sits below the body and never overlaps a handle.
 
 ##### Accessibility
 

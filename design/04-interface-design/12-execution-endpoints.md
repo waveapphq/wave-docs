@@ -24,7 +24,7 @@ Execution control and monitoring endpoints provide lifecycle operations for test
 
 **Timeline Analysis**: The report carries the execution timeline (see 4.14).
 
-**Execution History**: Entity-specific execution history endpoints return previous executions for individual tests, suites, or regressions. History responses support pagination for entities with extensive execution records. History entries include summary information enabling quick assessment of recent execution patterns, success rates, and timing trends without requiring individual execution retrieval.
+**Execution History**: The execution listing filtered to one test, suite, or regression returns that entity's previous executions. History responses support pagination for entities with extensive execution records. History entries include summary information enabling quick assessment of recent execution patterns, success rates, and timing trends without requiring individual execution retrieval.
 
 **Statistics Aggregation**: Statistics endpoints provide aggregate metrics across execution populations. Statistics responses include total execution counts, success and failure rates, and average durations over configurable time windows. Statistics filtering by entity type and identifier enables focused analysis of specific tests or suites. Statistics support dashboard displays and automated quality gate assessments.
 

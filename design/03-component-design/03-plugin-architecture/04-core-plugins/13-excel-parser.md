@@ -48,7 +48,7 @@ A declared type (from-schema mode, or a filter's declared type) is enforced agai
 
 ## Sorting and Filtering
 
-Either operation can optionally sort and filter the table it handles, using the same declarative Transform the CSV converter offers: an ordered list of sort keys applied in priority order, and per-column filter blocks whose conditions combine with the assertion control's and/or grouping. Both are backed by the table type's own filtering and ordering operations, and both are stored and run in the one shape the CSV converter uses (CSV-12). Cross-column or set-based logic beyond this declarative surface is expressed with the table's fluent operations in an expression.
+Either operation can optionally sort and filter the table it handles, using the same declarative Transform the CSV converter offers: an ordered list of sort keys applied in priority order, and per-column filter blocks whose conditions are always joined by AND, with no OR and no groups. Both are backed by the table type's own filtering and ordering operations, and both are stored and run in the one shape the CSV converter uses (CSV-12). Cross-column or set-based logic beyond this declarative surface is expressed with the table's fluent operations in an expression.
 
 ## Writing
 

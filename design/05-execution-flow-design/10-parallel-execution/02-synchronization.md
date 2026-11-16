@@ -22,7 +22,7 @@
 
 ##### REQ-3.2.3.7 Optional time limit per branch and per section
 
-**Two independent limits**: A branch may carry its own time limit, and the section may carry one for the whole concurrent region. Both are optional and independent; either may be set without the other. A branch with no limit is bounded only by the section limit, if there is one, and a section with no limit is bounded only by whatever limits its branches carry.
+**Two independent limits**: A branch may carry its own time limit, and the section may carry one for the whole concurrent region. Both are optional and independent; either may be set without the other. A branch with no limit is bounded only by the section limit, if there is one, and a section with no limit is bounded only by whatever limits its branches carry. Each limit is a whole number of milliseconds, at least 1, written as a number or as an expression evaluated when the section starts; the save refuses a written limit below 1, and an expression that gives one fails the section before any branch starts.
 
 **Branch limit**: A branch that exceeds its own limit stops at its next block boundary and ends as failed. It is a failed branch in every respect, so it ends the section under the failure rule (REQ-3.2.3.8).
 

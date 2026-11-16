@@ -4,13 +4,11 @@
 
 ##### REQ-5.2.4.8 Connection profiles endpoints
 
-Connection profile endpoints provide lifecycle operations for connection profiles enabling creation, modification, connectivity testing, type discovery, and schema retrieval. Profiles encapsulate connection configuration for external systems including databases, SSH servers, HTTP services, Kubernetes clusters, and OpenSearch instances, providing reusable connection definitions across tests and regressions.
+Connection profile endpoints provide lifecycle operations for connection profiles enabling creation, modification, type discovery, and schema retrieval. Profiles encapsulate connection configuration for external systems including databases, SSH servers, HTTP services, Kubernetes clusters, and OpenSearch instances, providing reusable connection definitions across tests and regressions.
 
 **Lifecycle Management**: The system supports full CRUD operations for profiles. Profile creation establishes metadata including name, type, and type-specific configuration. Each profile type defines its own configuration schema covering connection parameters, authentication credentials, and behavioral options. Retrieval supports individual access by identifier and bulk listing. Deletion enforces usage checking to prevent orphaned references in connectivity plugins, returning conflict status when profiles are in active use.
 
 **Type Discovery**: Type listing endpoints expose available profile types enabling dynamic client configuration. Type discovery returns the complete enumeration of supported types with descriptions. Schema retrieval for specific types returns JSON Schema definitions describing required and optional configuration fields, enabling client-side form generation and pre-submission validation. Each field carries its declared starting value where the schema declares one, so a client can open a new profile on the value the type is meant to start at rather than on a blank.
-
-**Connectivity Testing**: Profile validation through connectivity testing verifies configuration correctness without requiring full execution context. Test endpoints attempt connection establishment using profile configuration, returning success status, connection latency measurements, and detailed error information on failure. Connectivity tests are non-destructive read-only operations that do not modify target systems. Test results include diagnostic information assisting configuration troubleshooting.
 
 **Configuration Structure**: Profile configurations follow type-specific schemas while sharing common patterns. All profiles support optional description fields for documentation. Connection-oriented profiles name their target by host and port, or by one URL where the plugin takes one, plus a timeout where the type keeps one. Authentication-aware profiles support multiple credential types including passwords, API keys, certificates, and token-based schemes.
 
@@ -20,7 +18,7 @@ Connection profile endpoints provide lifecycle operations for connection profile
 
 **Caching and Performance**: Profile metadata caches with invalidation on modification operations. Type schemas cache with extended TTLs as schema definitions change infrequently.
 
-**Error Handling**: Operations enforce validation through consistent error responses. Invalid profile types return bad request with valid type enumeration. Missing profiles return not found with identifier context. Configuration validation failures return bad request with schema violation details including field paths and constraint descriptions. Connectivity test failures return success response with connected false and detailed error information. Deletion of in-use profiles returns conflict with referencing entity information.
+**Error Handling**: Operations enforce validation through consistent error responses. Invalid profile types return bad request with valid type enumeration. Missing profiles return not found with identifier context. Configuration validation failures return bad request with schema violation details including field paths and constraint descriptions. Deletion of in-use profiles returns conflict with referencing entity information. Creating, duplicating or renaming a profile onto a name another profile holds returns conflict.
 
 ##### REQ-4.7.3 Connection profiles (database, SSH, HTTP)
 

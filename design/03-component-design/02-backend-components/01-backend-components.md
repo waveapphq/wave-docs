@@ -36,7 +36,7 @@ The backend provides a RESTful API with WebSocket support, organized into the fo
 
 **Entity Lifecycle Services**
 - CRUD orchestration for tests, suites, and regressions
-- Active-execution guard on delete: rejects with `Conflict` when any tracked execution referencing the entity is in a non-terminal state (running or paused), returning the blocking execution identifiers so the caller can route the user to stop them
+- Active-execution guard on delete: rejects with `Conflict` when any tracked execution referencing the entity is in a non-terminal state (running or paused), returning the blocking identifiers so the caller can route the user to stop them. For a test, the guard also counts a running or paused suite or regression execution that carries the test, and a workbench session running or paused on it
 - Cascade on successful delete: removes the deleted child from every parent that references it (test removed from suites, suite removed from regressions) so no dangling parent-to-child references remain
 - Executions are never mutated by entity lifecycle operations. Historical execution records carry their own immutable workflow and name snapshots, keeping the Historical Test Canvas and stored execution metadata valid after the source entity is gone
 

@@ -20,7 +20,7 @@ Regression-level variables provide campaign-wide configuration values accessed v
 
 **Collision Detection**: When regression variables are created or modified, the system validates that same-named variables across all referenced suites maintain consistent types. Collisions are detected before persistence - validation runs against the proposed state, not the saved state. This follows the same validation pattern established for suites.
 
-**Validation Entry Points**: Two paths trigger collision validation: (1) regression update - the primary UI path for all modifications including variable edits and suite membership changes, and (2) regression import. Both paths validate before persisting to avoid rollback scenarios.
+**Validation Entry Points**: Three paths trigger collision validation: (1) regression create, (2) regression update - the primary UI path for all modifications including variable edits and suite membership changes, and (3) regression import. All three validate before persisting to avoid rollback scenarios.
 
 **Error Response**: Collision errors return structured details including the conflicting variable name, the type declared in the regression, the conflicting type in the suite, and the suite identifier. This enables the frontend to display actionable error messages with resolution options.
 
