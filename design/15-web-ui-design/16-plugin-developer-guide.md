@@ -100,6 +100,8 @@ Parameters with the same `group` string are rendered in a collapsible section. T
 
 Every input parameter supports three value modes: literal, expression, and template. The mode determines how the backend processes the parameter value before passing it to the plugin's execute method.
 
+The one exception is a parameter that shows or hides other rows, such as a TLS switch or a mode choice. It takes a literal value only and has no `{x}` toggle, the rows that depend on it are hidden while it is off, and a profile never stores it.
+
 **Literal Mode (default)** - The parameter value is used as-is. No evaluation or substitution occurs.
 
 **Expression Mode** - The entire parameter value is evaluated as a Python expression with safe builtins. The result must match the declared parameter type. In the config modal, each input parameter has a `{x}` toggle button that switches the field to an expression editor (CodeMirror) with variable autocomplete.
