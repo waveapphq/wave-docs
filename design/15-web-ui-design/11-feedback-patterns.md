@@ -351,7 +351,7 @@ The confirmation phrase should be contextually appropriate: "DELETE" for deletio
 
 Undo and redo functionality enables users to reverse and restore editing actions within a session, providing confidence to experiment freely without fear of permanent mistakes. This capability operates entirely on the frontend, managing draft state changes between explicit save operations. The undo system transforms the editing experience from a series of committed decisions into a fluid exploration where users can safely try approaches and backtrack as needed.
 
-**Architectural Model**: The undo/redo system follows a session-scoped, save-bounded architecture. When a user opens an entity for editing, the history initializes with a single baseline entry representing the loaded state - the saved Test, or the loaded published body when a Function is opened standalone from the library. All editing operations within that session accumulate as entries after the baseline. When the user saves, the history floors to a fresh baseline and the saved state becomes the new starting point. This model treats save as a commit point, creating a clear mental model where undo operates only on uncommitted draft changes and can never reach further back than the loaded state.
+**Architectural Model**: The undo/redo system follows a session-scoped, save-bounded architecture. When a user opens an entity for editing, the history initializes with a single baseline entry representing the loaded state - the saved Test, or the loaded published body when a Function is opened standalone from the library. All editing operations within that session accumulate as entries after the baseline. When the user saves, the history floors to a fresh baseline and the saved state becomes the new starting point. This model treats save as a commit point, creating a clear mental model where undo operates only on uncommitted draft changes and can never reach further back than the loaded state. History belongs to the workbench surface a tab holds. A tab that watches another holder's session keeps no history of its own, so it has nothing to undo or redo. A tab that takes the session over or inherits it starts a fresh history at the surface it then holds, so undo never brings back content from before a surface switch; when that surface is unsaved work, its baseline stays unsaved.
 
 | Concept | Behavior |
 |---------|----------|
@@ -371,7 +371,7 @@ Undo and redo functionality enables users to reverse and restore editing actions
 | Storage format | Full state snapshots | Restore correctness for nested trees |
 | Baseline retention | The baseline entry is never evicted by the depth cap | The clean (saved) state must always stay reachable |
 | Scope | Per editing session | Isolated between different open editors |
-| Persistence | None (memory only) | Clears on save, close, or page refresh |
+| Persistence | None (memory only) | Clears on save, close, page refresh, or a surface switch |
 
 **Tracked Operations**: The undo system tracks editing operations that modify entity state within the current editing context. Operations are categorized by their scope and reversibility.
 
@@ -398,6 +398,7 @@ Undo and redo functionality enables users to reverse and restore editing actions
 | Situation | Dirty State |
 |-----------|-------------|
 | Entity opened | Clean (canvas equals baseline) |
+| Session taken over or inherited | As received: clean for the saved test, dirty for unsaved work, also after an undo back to it |
 | Any tracked operation that changes canonical state | Dirty |
 | Runtime-transient operations (skip marks, selection, drill) | Unchanged |
 | Save completed | Clean (canvas becomes the new baseline) |
@@ -421,7 +422,7 @@ Every pin transition - a version-change entry being undone or redone, a keep-old
 | Undo | Ctrl+Z | Cmd+Z |
 | Redo | Ctrl+Shift+Z or Ctrl+Y | Cmd+Shift+Z |
 
-These shortcuts function globally within the editing context, regardless of which element has focus. The shortcuts are disabled when focus is within a text input field that has its own undo behavior, preventing conflicts with native input undo functionality. Availability is enforced at the state layer, so keyboard shortcuts, toolbar buttons, and any programmatic trigger always agree: while an execution is running or paused, undo and redo are unavailable on every input path. A read-only drilled scope (viewing a published Function body) does not block undo/redo, because the timeline is canvas-global; scope reconciliation keeps the view coherent.
+These shortcuts function globally within the editing context, regardless of which element has focus. The shortcuts are disabled when focus is within a text input field that has its own undo behavior, preventing conflicts with native input undo functionality. Availability is enforced at the state layer, so keyboard shortcuts, toolbar buttons, and any programmatic trigger always agree: while an execution is running or paused, and in a tab that watches another holder's session, undo and redo are unavailable on every input path, so the undo shortcuts do nothing there. A read-only drilled scope (viewing a published Function body) does not block undo/redo, because the timeline is canvas-global; scope reconciliation keeps the view coherent.
 
 **Toolbar Integration**: The editor toolbar displays undo and redo buttons providing mouse-accessible alternatives to keyboard shortcuts. Button states reflect the availability of undo and redo actions.
 
