@@ -266,7 +266,7 @@ When a canvas contains no user-added elements, it displays an onboarding experie
 - Contains onboarding content when empty
 - Accepts drops from palette
 - Disappears permanently once first element is placed
-- Positioned at grid-snapped location below start
+- Centered under Start on x 0 (CANVAS-248)
 
 **Onboarding Hint Content**: Text guidance within the placeholder:
 
@@ -343,6 +343,8 @@ A loading overlay covers the canvas area during the preparation phase, providing
 When the canvas opens with no existing test data, the viewport centers on the Start node and onboarding area to provide immediate visual orientation. Users should see the workflow entry point and instructional content without needing to pan or zoom.
 
 **Blank Canvas Centering**: For a fresh workbench with no draft, the viewport positions to show the Start node prominently with the onboarding placeholder visible below it. The view should encompass the Start node, ghost connector, and placeholder block within the visible canvas area with comfortable padding around the group.
+
+**Start Node Geometry**: The Start node is 100 pixels wide, with its label centered, and its center is x 0, the line the flow descends on (CANVAS-248). The onboarding placeholder is centered under it on the same line, so the ghost connector runs straight down. Every Test shares this geometry: a Test built from a recipe lays its main line on x 0, so the link from Start to its first block is straight, and Quick Insert's Enter under Start centers the new block on x 0 (CANVAS-249).
 
 **Draft Canvas Viewport**: For draft restoration, the saved viewport position (pan offset and zoom level) is restored exactly as the user left it. No automatic centering or fit-view adjustment occurs, preserving the user's spatial context.
 
@@ -928,7 +930,7 @@ The window owns the keyboard for as long as it is open. The text caret stays in 
 | Ctrl+Enter | Insert at the viewport center, unwired |
 | ESC | Close |
 
-Enter resolves its anchor from the canvas rather than from a separate key: the single selected block when there is one, otherwise the last block the author interacted with, otherwise the end of the flow - which on a clean root canvas or an empty Function body is the Start block. The new block is linked from the anchor's first free egress; when the anchor has no free egress it is placed without a link. The footer hint names the anchor in force, so the key's promise stays literally true as the selection changes.
+Enter resolves its anchor from the canvas rather than from a separate key: the single selected block when there is one, otherwise the last block the author interacted with, otherwise the end of the flow - which on a clean root canvas or an empty Function body is the Start block. The new block is linked from the anchor's first free egress; when the anchor has no free egress it is placed without a link. Enter centers the new block under the egress handle it links from, its top 140 pixels below the anchor's top, so the new link is straight whatever the two blocks' widths (CANVAS-249): under Start that is x 0, Start's center; under an If/Else whose first branch is linked it is the first free branch handle. An anchor with no free egress gets the new block centered under the anchor itself. Ctrl+Enter keeps its own placement, at the viewport center with no link. The footer hint names the anchor in force, so the key's promise stays literally true as the selection changes.
 
 "Last interacted" is the most recently selected or inserted block within the active (drilled) scope. The placed element always becomes the selection - replacing any prior selection - and the new "last interacted" block, so repeated Ctrl+Space, Enter sequences chain a workflow downward without touching the mouse. Result rows are also drag sources: dragging a row onto the canvas follows the standard palette drop path, including proximity auto-connect; the footer names that affordance with a pointer badge rather than a key badge.
 

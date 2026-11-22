@@ -30,7 +30,7 @@ All query results are returned in a single `results` map. Each entry contains ty
 
 ### Individual Mode
 
-Each query result is returned as a separate top-level output variable. Optional type coercion converts extracted values to the expected type (string, integer, float, boolean). This mode enables direct variable binding to query results.
+Each query result is returned as a separate top-level output variable. Optional type coercion converts extracted values to the expected type (string, integer, float, boolean). This mode enables direct variable binding to query results. Each query name is an output of the block while Output Mode is Individual, typed by the query's result type, or a string when that type is not set or the query path is an expression, and the results output is not one then. A recipe captures a query only into the variable of the same name, written as the query name bound to itself, because the canvas binds each query to the variable it names; a recipe that captures it under another name is refused, and so is a query named success or errors, a repeated name, or a name that is not a valid variable name (REQ-5.2.7.3).
 
 ## Type Coercion
 
