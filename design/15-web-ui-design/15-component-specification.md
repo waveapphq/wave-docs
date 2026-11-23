@@ -200,7 +200,7 @@ The page size is fixed; changing the search or tag filter restarts paging from t
 
 ##### Quick Insert
 
-> CANVAS-231 through CANVAS-237, CANVAS-241 through CANVAS-247
+> CANVAS-231 through CANVAS-237, CANVAS-241 through CANVAS-247, CANVAS-249
 
 Keyboard-first insert surface over the canvas: a non-blocking movable window, not a modal. One search field drives one grouped list (PLUGINS / CONTROLS / FUNCTIONS) whose first row is highlighted on open and after every query change. The built-in rows are held in the browser and filter as the author types; the published-Function rows are server-paginated and appended as the list is scrolled. A permanent status line between the list and the hint strip describes the Functions half at all times.
 
